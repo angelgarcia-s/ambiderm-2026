@@ -47,7 +47,7 @@
             </p>
 
             <div class="flex flex-col sm:flex-row gap-4">
-              <a href="{{ route('guantes-vynil') }}"
+              <a href="{{ route('productos') }}"
                 class="bg-brand-blue text-white px-10 py-4 rounded-full font-semibold hover:bg-brand-blue-hover transition-all hover:scale-105 active:scale-95 shadow-lg shadow-blue-500/20 text-center">
                 Comprar ahora
               </a>

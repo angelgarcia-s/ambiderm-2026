@@ -47,6 +47,41 @@
                         @endcan
                     </flux:sidebar.group>
                 @endcanany
+
+                @canany(['categorias.ver', 'productos.ver'])
+                    <flux:sidebar.group heading="Catálogo" class="grid">
+                        @can('categorias.ver')
+                            <flux:sidebar.item icon="folder"
+                                              :href="route('admin.categorias.index')"
+                                              :current="request()->routeIs('admin.categorias.*')"
+                                              wire:navigate>
+                                Categorías
+                            </flux:sidebar.item>
+                        @endcan
+                        @can('productos.ver')
+                            <flux:sidebar.item icon="cube"
+                                              :href="route('admin.productos.index')"
+                                              :current="request()->routeIs('admin.productos.*')"
+                                              wire:navigate>
+                                Productos
+                            </flux:sidebar.item>
+                        @endcan
+                        @can('productos.crear')
+                            <flux:sidebar.item icon="scale"
+                                              :href="route('admin.tamanos.index')"
+                                              :current="request()->routeIs('admin.tamanos.*')"
+                                              wire:navigate>
+                                Tamaños
+                            </flux:sidebar.item>
+                            <flux:sidebar.item icon="swatch"
+                                              :href="route('admin.colores.index')"
+                                              :current="request()->routeIs('admin.colores.*')"
+                                              wire:navigate>
+                                Colores
+                            </flux:sidebar.item>
+                        @endcan
+                    </flux:sidebar.group>
+                @endcanany
             </flux:sidebar.nav>
 
             <flux:spacer />

@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Models\Categoria;
+use App\Models\Producto;
+use App\Policies\CategoriaPolicy;
+use App\Policies\ProductoPolicy;
 use App\Policies\RolePolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
@@ -58,5 +62,7 @@ class AppServiceProvider extends ServiceProvider
     protected function configurePolicies(): void
     {
         Gate::policy(Role::class, RolePolicy::class);
+        Gate::policy(Categoria::class, CategoriaPolicy::class);
+        Gate::policy(Producto::class, ProductoPolicy::class);
     }
 }

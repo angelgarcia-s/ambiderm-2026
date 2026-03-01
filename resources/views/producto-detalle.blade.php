@@ -1,4 +1,4 @@
-<x-layouts.public title="Guantes Colorfull - Ambiderm">
+<x-layouts.public title="{{ $producto->nombre }} - Ambiderm">
 
     <!-- --- BREADCRUMB --- -->
     <div class="pt-24 pb-4 px-6 md:px-12 bg-white">
@@ -7,7 +7,7 @@
             <span class="text-gray-300">/</span>
             <a href="{{ route('productos') }}" class="hover:text-brand-blue transition-colors">Productos</a>
             <span class="text-gray-300">/</span>
-            <span class="text-brand-blue font-bold">Guantes Colorfull</span>
+            <span class="text-brand-blue font-bold">{{ $producto->nombre }}</span>
         </div>
     </div>
 
@@ -19,181 +19,193 @@
             <div class="relative">
                 <div class="relative bg-brand-surface rounded-[40px] aspect-square flex items-center justify-center p-8 lg:p-16 overflow-hidden reveal reveal-scale-in">
                     <div class="absolute inset-0 bg-blue-100/50 blur-[80px] rounded-full scale-75 opacity-0 active-color-bg transition-opacity duration-500"></div>
-                    <img id="main-product-image"
-                        src="https://ambiderm.com.mx/storage/productos/C4NnlHYzhDvxIsaApvd49fzzIiZcScrqES12GI4N.png"
-                        alt="Guante Colorfull"
-                        class="w-full h-full object-contain mix-blend-multiply z-10 transition-transform duration-500 hover:scale-105">
+                    @if ($producto->imagen)
+                        <img id="main-product-image"
+                            src="{{ Storage::url($producto->imagen) }}"
+                            alt="{{ $producto->nombre }}"
+                            class="w-full h-full object-contain mix-blend-multiply z-10 transition-transform duration-500 hover:scale-105">
+                    @else
+                        <div class="flex items-center justify-center w-full h-full z-10">
+                            <i data-lucide="package" class="w-24 h-24 text-gray-300"></i>
+                        </div>
+                    @endif
                 </div>
             </div>
 
             <!-- Column RIGHT: Product Info -->
             <div class="flex flex-col justify-center reveal reveal-fade-in" style="transition-delay: 200ms;">
-                <div class="mb-2">
-                    <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-brand-blue text-[10px] font-bold uppercase tracking-widest border border-blue-100">Más Vendido</span>
-                    <span class="inline-block px-3 py-1 rounded-full bg-purple-50 text-purple-600 text-[10px] font-bold uppercase tracking-widest border border-purple-100 ml-2">Colores Divertidos</span>
-                </div>
+                {{-- Etiquetas --}}
+                @if (!empty($producto->etiquetas))
+                    <div class="mb-2 flex flex-wrap gap-2">
+                        @foreach ($producto->etiquetas as $etiqueta)
+                            <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-brand-blue text-[10px] font-bold uppercase tracking-widest border border-blue-100">{{ $etiqueta }}</span>
+                        @endforeach
+                    </div>
+                @endif
 
-                <h1 class="text-4xl md:text-5xl font-black text-brand-ink mb-2 tracking-tight">Colorfull</h1>
-                <p class="text-xl text-gray-500 font-medium mb-6">Guantes de látex para exploración</p>
+                <h1 class="text-4xl md:text-5xl font-black text-brand-ink mb-2 tracking-tight">{{ $producto->nombre }}</h1>
+                @if ($producto->subtitulo)
+                    <p class="text-xl text-gray-500 font-medium mb-6">{{ $producto->subtitulo }}</p>
+                @endif
 
-                <p class="text-gray-600 leading-relaxed mb-8 text-lg">
-                    Una opción vibrante y práctica para diversas aplicaciones. Diseñados para brindar protección y
-                    estilo, con un acabado sedoso que facilita la colocación y minimiza la fatiga manual. Ideal para
-                    odontología y procedimientos no estériles.
-                </p>
+                @if ($producto->descripcion)
+                    <p class="text-gray-600 leading-relaxed mb-8 text-lg">{{ $producto->descripcion }}</p>
+                @endif
 
                 <!-- Selectors -->
-                <div class="space-y-8 mb-10 border-t border-b border-gray-100 py-8">
+                @if ($producto->colores->count() || $producto->tamanos->count())
+                    <div class="space-y-8 mb-10 border-t border-b border-gray-100 py-8">
 
-                    <!-- Color Selector -->
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Color Seleccionado:
-                            <span id="color-name" class="text-brand-ink">Surtido</span>
-                        </p>
-                        <div class="flex gap-4">
-                            <button
-                                class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 ring-2 ring-offset-2 ring-brand-blue color-option active"
-                                data-color="Surtido"
-                                data-img="https://ambiderm.com.mx/storage/productos/C4NnlHYzhDvxIsaApvd49fzzIiZcScrqES12GI4N.png"></button>
-                            <button
-                                class="w-10 h-10 rounded-full bg-[#37b5e5] color-option opacity-50 hover:opacity-100"
-                                data-color="Azul" aria-label="Azul"></button>
-                            <button
-                                class="w-10 h-10 rounded-full bg-[#ff70a6] color-option opacity-50 hover:opacity-100"
-                                data-color="Rosa" aria-label="Rosa"></button>
-                            <button
-                                class="w-10 h-10 rounded-full bg-[#a3cf62] color-option opacity-50 hover:opacity-100"
-                                data-color="Verde" aria-label="Verde"></button>
-                        </div>
+                        {{-- Color Selector --}}
+                        @if ($producto->colores->count())
+                            <div>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Color Seleccionado:
+                                    <span id="color-name" class="text-brand-ink">{{ $producto->colores->first()->nombre }}</span>
+                                </p>
+                                <div class="flex flex-wrap gap-4">
+                                    @foreach ($producto->colores as $i => $color)
+                                        @php
+                                            $pivotImg = $color->pivot->imagen ? Storage::url($color->pivot->imagen) : null;
+                                        @endphp
+                                        @if ($color->icono)
+                                            <button
+                                                class="w-10 h-10 rounded-full overflow-hidden color-option {{ $i === 0 ? 'active ring-2 ring-offset-2 ring-brand-blue' : 'opacity-50 hover:opacity-100' }}"
+                                                data-color="{{ $color->nombre }}"
+                                                @if ($pivotImg) data-img="{{ $pivotImg }}" @endif
+                                                aria-label="{{ $color->nombre }}">
+                                                <img src="{{ Storage::url($color->icono) }}" alt="{{ $color->nombre }}" class="w-full h-full object-cover">
+                                            </button>
+                                        @else
+                                            <button
+                                                class="w-10 h-10 rounded-full color-option {{ $i === 0 ? 'active ring-2 ring-offset-2 ring-brand-blue' : 'opacity-50 hover:opacity-100' }}"
+                                                style="background-color: {{ $color->hex ?? '#ccc' }}"
+                                                data-color="{{ $color->nombre }}"
+                                                @if ($pivotImg) data-img="{{ $pivotImg }}" @endif
+                                                aria-label="{{ $color->nombre }}">
+                                            </button>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- Size Selector --}}
+                        @if ($producto->tamanos->count())
+                            <div>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Talla</p>
+                                <div class="flex flex-wrap gap-3">
+                                    @foreach ($producto->tamanos as $j => $tamano)
+                                        <button class="size-option w-12 h-12 rounded-xl border font-bold flex items-center justify-center {{ $j === 0 ? 'bg-brand-ink text-white border-brand-ink active' : 'border-gray-200 text-gray-500 hover:bg-gray-50' }}">
+                                            @if ($tamano->icono)
+                                                <img src="{{ Storage::url($tamano->icono) }}" alt="{{ $tamano->nombre }}" class="w-6 h-6 object-contain">
+                                            @else
+                                                {{ $tamano->abreviatura ?? $tamano->nombre }}
+                                            @endif
+                                        </button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
+                @endif
 
-                    <!-- Size Selector -->
-                    <div>
-                        <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Talla</p>
-                        <div class="flex gap-3">
-                            <button class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">XS</button>
-                            <button class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">S</button>
-                            <button class="size-option w-12 h-12 rounded-xl bg-brand-ink text-white border border-brand-ink font-bold flex items-center justify-center ring-2 ring-offset-2 ring-transparent active">M</button>
-                            <button class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">L</button>
-                        </div>
-                    </div>
-                </div>
+                {{-- Feature List (Características) --}}
+                @if (!empty($producto->caracteristicas))
+                    <ul class="space-y-3 mb-10">
+                        @foreach ($producto->caracteristicas as $caracteristica)
+                            <li class="flex items-center text-gray-600 font-medium">
+                                <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> {{ $caracteristica }}
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
 
-                <!-- Feature List -->
-                <ul class="space-y-3 mb-10">
-                    <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> No estéril
-                    </li>
-                    <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Ambidiestro y liso
-                    </li>
-                    <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Bajo contenido de polvo
-                    </li>
-                    <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Cumple Normas Oficiales
-                    </li>
-                </ul>
-
-                <!-- Actions -->
+                {{-- Actions --}}
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <a href="https://shop.ambiderm.com.mx/collections/guantes-de-latex/products/colorfull"
-                        target="_blank"
-                        class="flex-1 bg-brand-blue text-white font-bold py-4 rounded-full text-center hover:bg-brand-blue-hover hover:shadow-lg hover:shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
-                        <i data-lucide="shopping-bag" class="w-5 h-5"></i> COMPRAR EN LÍNEA
-                    </a>
-                    <a href="https://www.ambiderm.com.mx/catalogo/catalogo.pdf" target="_blank"
-                        class="flex-1 bg-gray-50 text-brand-ink font-bold py-4 rounded-full text-center border border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
-                        <i data-lucide="file-text" class="w-5 h-5"></i> FICHA TÉCNICA
-                    </a>
+                    @if ($producto->url_tienda)
+                        <a href="{{ $producto->url_tienda }}"
+                            target="_blank"
+                            class="flex-1 bg-brand-blue text-white font-bold py-4 rounded-full text-center hover:bg-brand-blue-hover hover:shadow-lg hover:shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5"></i> COMPRAR EN LÍNEA
+                        </a>
+                    @endif
+                    @if ($producto->url_ficha_tecnica)
+                        <a href="{{ $producto->url_ficha_tecnica }}" target="_blank"
+                            class="flex-1 bg-gray-50 text-brand-ink font-bold py-4 rounded-full text-center border border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="file-text" class="w-5 h-5"></i> FICHA TÉCNICA
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
     </section>
 
     <!-- --- TECHNICAL DETAILS ACCORDION --- -->
-    <section class="py-12 bg-[#fbfbfd] border-t border-gray-100">
-        <div class="max-w-[800px] mx-auto px-6">
+    @if ($producto->presentacion || $producto->certificaciones)
+        <section class="py-12 bg-[#fbfbfd] border-t border-gray-100">
+            <div class="max-w-[800px] mx-auto px-6">
 
-            <div class="mb-4">
-                <button class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <span class="font-bold text-lg text-brand-ink">Información de Presentación</span>
-                    <i data-lucide="chevron-down" class="icon-chevron w-5 h-5 text-gray-400 transition-transform"></i>
-                </button>
-                <div class="accordion-content">
-                    <div class="p-6 text-gray-600 leading-relaxed">
-                        <p class="mb-2"><strong>Junior:</strong> Caja con 100 guantes (50 pares al peso).</p>
-                        <p><strong>Master:</strong> Corrugado con 10 cajas (1,000 guantes en total).</p>
+                @if ($producto->presentacion)
+                    <div class="mb-4">
+                        <button class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
+                            <span class="font-bold text-lg text-brand-ink">Información de Presentación</span>
+                            <i data-lucide="chevron-down" class="icon-chevron w-5 h-5 text-gray-400 transition-transform"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 text-gray-600 leading-relaxed">
+                                {!! nl2br(e($producto->presentacion)) !!}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                @endif
 
-            <div class="mb-4">
-                <button class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <span class="font-bold text-lg text-brand-ink">Normas y Certificaciones</span>
-                    <i data-lucide="chevron-down" class="icon-chevron w-5 h-5 text-gray-400 transition-transform"></i>
-                </button>
-                <div class="accordion-content">
-                    <div class="p-6 text-gray-600 leading-relaxed">
-                        <p>Cumple con las Normas Oficiales Mexicanas y estándares internacionales de calidad para
-                            guantes de exploración médica de un solo uso.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1">
-                            <li>ISO 9001:2015</li>
-                            <li>Registro COFEPRIS Vigente</li>
-                        </ul>
+                @if ($producto->certificaciones)
+                    <div class="mb-4">
+                        <button class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
+                            <span class="font-bold text-lg text-brand-ink">Normas y Certificaciones</span>
+                            <i data-lucide="chevron-down" class="icon-chevron w-5 h-5 text-gray-400 transition-transform"></i>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-6 text-gray-600 leading-relaxed">
+                                {!! nl2br(e($producto->certificaciones)) !!}
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>
+                @endif
 
-        </div>
-    </section>
+            </div>
+        </section>
+    @endif
 
     <!-- --- RELATED PRODUCTS --- -->
-    <section class="py-24 px-6 bg-white">
-        <div class="max-w-[1240px] mx-auto">
-            <h2 class="text-2xl md:text-3xl font-black text-brand-ink mb-12 text-center">TAMBIÉN TE PUEDE INTERESAR</h2>
+    @if ($relacionados->count())
+        <section class="py-24 px-6 bg-white">
+            <div class="max-w-[1240px] mx-auto">
+                <h2 class="text-2xl md:text-3xl font-black text-brand-ink mb-12 text-center">TAMBIÉN TE PUEDE INTERESAR</h2>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-
-                <a href="https://ambiderm.com.mx/productos/guantes/esteril"
-                    class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
-                    <div class="aspect-square flex items-center justify-center mb-6">
-                        <img src="https://ambiderm.com.mx/storage/productos/7OyCwjS7LYzZDXCWYYdEpHhnmjMjuigXOGnGIGmE.png"
-                            class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
-                    </div>
-                    <div class="text-center">
-                        <h4 class="font-bold text-lg text-brand-ink">Estéril</h4>
-                        <p class="text-sm text-gray-500">Para cirugía menor</p>
-                    </div>
-                </a>
-
-                <a href="https://ambiderm.com.mx/productos/guantes/nitrilo"
-                    class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
-                    <div class="aspect-square flex items-center justify-center mb-6">
-                        <img src="https://ambiderm.com.mx/storage/productos/BDOCYI3GixLQoC1nmI7oFe6ZJ2F8vPpvMgSA8E8i.png"
-                            class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
-                    </div>
-                    <div class="text-center">
-                        <h4 class="font-bold text-lg text-brand-ink">Nitrilo</h4>
-                        <p class="text-sm text-gray-500">Alternativa libre de látex</p>
-                    </div>
-                </a>
-
-                <a href="https://ambiderm.com.mx/productos/guantes/kid-gloves"
-                    class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
-                    <div class="aspect-square flex items-center justify-center mb-6">
-                        <img src="https://ambiderm.com.mx/storage/productos/qXdk8YkEfNw7smTDqlW1otPlR3ZXKZ50mnwJpLfz.png"
-                            class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
-                    </div>
-                    <div class="text-center">
-                        <h4 class="font-bold text-lg text-brand-ink">Kid Gloves</h4>
-                        <p class="text-sm text-gray-500">Pediátrico</p>
-                    </div>
-                </a>
-
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                    @foreach ($relacionados as $rel)
+                        <a href="{{ route('producto.detalle', $rel->slug) }}"
+                            class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
+                            <div class="aspect-square flex items-center justify-center mb-6">
+                                @if ($rel->imagen)
+                                    <img src="{{ Storage::url($rel->imagen) }}"
+                                        alt="{{ $rel->nombre }}"
+                                        class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
+                                @else
+                                    <i data-lucide="package" class="w-16 h-16 text-gray-300"></i>
+                                @endif
+                            </div>
+                            <div class="text-center">
+                                <h4 class="font-bold text-lg text-brand-ink">{{ $rel->nombre }}</h4>
+                                <p class="text-sm text-gray-500">{{ $rel->subtitulo ?? $rel->material }}</p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
+    @endif
 
     <!-- --- FOOTER --- -->
     <footer class="bg-white pt-10 overflow-hidden" id="contacto">
