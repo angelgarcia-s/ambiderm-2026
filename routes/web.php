@@ -1,8 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\CategoriasController;
+use App\Http\Controllers\Admin\ColoresController;
 use App\Http\Controllers\Admin\PermisosController;
+use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\Admin\TamanosController;
 use App\Http\Controllers\Admin\UsuariosController;
+use App\Http\Controllers\ProductosPublicController;
 use Illuminate\Support\Facades\Route;
 
 // frontend routes
@@ -11,11 +16,12 @@ Route::view('/', 'home')->name('home');
 
 Route::view('/nosotros', 'acerca-de-ambiderm')->name('nosotros');
 
-Route::view('/productos', 'productos-ambiderm')->name('productos');
+Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
+Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');
 
-Route::view('/producto-detalle', 'producto-detalle')->name('producto-detalle');
-
-Route::view('/guantes-vynil', 'guantes-vynil')->name('guantes-vynil');
+// Redirects legacy (301)
+Route::redirect('/producto-detalle', '/productos', 301)->name('producto-detalle');
+Route::redirect('/guantes-vynil', '/productos', 301)->name('guantes-vynil');
 
 
 // backend routes
@@ -45,6 +51,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('permisos', [PermisosController::class, 'index'])
             ->middleware('can:permisos.ver')
             ->name('permisos.index');
+
+        // Categorías (ADR-003)
+        Route::get('categorias', [CategoriasController::class, 'index'])
+            ->middleware('can:categorias.ver')
+            ->name('categorias.index');
+
+        // Productos (ADR-003)
+        Route::get('productos', [ProductosController::class, 'index'])
+            ->middleware('can:productos.ver')
+            ->name('productos.index');
+        Route::get('productos/crear', [ProductosController::class, 'create'])
+            ->middleware('can:productos.crear')
+            ->name('productos.create');
+        Route::get('productos/{producto}/editar', [ProductosController::class, 'edit'])
+            ->middleware('can:productos.editar')
+            ->name('productos.edit');
+
+        // Catálogos auxiliares (ADR-003)
+        Route::get('tamanos', [TamanosController::class, 'index'])
+            ->middleware('can:productos.crear')
+            ->name('tamanos.index');
+        Route::get('colores', [ColoresController::class, 'index'])
+            ->middleware('can:productos.crear')
+            ->name('colores.index');
     });
 });
 

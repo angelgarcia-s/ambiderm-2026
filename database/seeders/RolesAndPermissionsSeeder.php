@@ -31,7 +31,13 @@ class RolesAndPermissionsSeeder extends Seeder
         // Permisos
         'permisos.ver',
 
-        // Productos (reservado para ADR-003)
+        // Categorías (ADR-003)
+        'categorias.ver',
+        'categorias.crear',
+        'categorias.editar',
+        'categorias.eliminar',
+
+        // Productos (ADR-003)
         'productos.ver',
         'productos.crear',
         'productos.editar',
@@ -107,6 +113,10 @@ class RolesAndPermissionsSeeder extends Seeder
             'roles.editar',
             'roles.eliminar',
             'permisos.ver',
+            'categorias.ver',
+            'categorias.crear',
+            'categorias.editar',
+            'categorias.eliminar',
             'productos.ver',
             'productos.crear',
             'productos.editar',
@@ -117,6 +127,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $editor = Role::findByName('editor', 'web');
         $editor->syncPermissions([
             'dashboard.ver',
+            'categorias.ver',
             'productos.ver',
             'productos.editar',
         ]);

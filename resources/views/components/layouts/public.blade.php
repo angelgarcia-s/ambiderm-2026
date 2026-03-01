@@ -27,7 +27,7 @@
 
         $isHome      = request()->routeIs('home');
         $isNosotros  = request()->routeIs('nosotros');
-        $isProductos = request()->routeIs('productos', 'producto-detalle', 'guantes-vynil');
+        $isProductos = request()->routeIs('productos', 'producto.detalle');
 
         $linkBase   = 'transition-colors uppercase text-[12px] font-normal tracking-tight';
         $linkActive = 'text-brand-blue font-bold';
