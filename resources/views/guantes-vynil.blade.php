@@ -1,187 +1,13 @@
-<!DOCTYPE html>
-<html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guantes Vinyl Light - Ambiderm</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons CDN -->
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Lenis Smooth Scroll -->
-    <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap');
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-
-        /* Reveal Animations */
-        .reveal {
-            opacity: 0;
-            transition: all 1000ms ease-out;
-        }
-
-        .reveal-fade-in {
-            transform: translateY(3rem);
-        }
-
-        .reveal-scale-in {
-            transform: scale(0.9);
-        }
-
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
-
-        /* Mobile Menu Animation */
-        #mobile-menu {
-            transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
-            pointer-events: none;
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-
-        #mobile-menu.active {
-            pointer-events: auto;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Color Selector Animation */
-        .color-option {
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        .color-option.active {
-            transform: scale(1.1);
-        }
-
-        .size-option {
-            transition: all 0.2s;
-        }
-
-        .size-option:hover {
-            border-color: #3b82f6;
-            color: #3b82f6;
-        }
-
-        .size-option.active {
-            background-color: #3b82f6;
-            color: white;
-            border-color: #3b82f6;
-        }
-
-        /* Custom Accordion */
-        .accordion-content {
-            transition: max-height 0.3s ease-out;
-            max-height: 0;
-            overflow: hidden;
-        }
-
-        .accordion-btn.active .icon-chevron {
-            transform: rotate(180deg);
-        }
-    </style>
-</head>
-
-<body class="font-sans text-[#1d1d1f] bg-white selection:bg-blue-200 selection:text-blue-900 overflow-x-hidden">
-
-    <!-- --- NAVIGATION --- -->
-    <nav id="main-nav"
-        class="fixed top-0 w-full z-50 transition-all duration-500 bg-white/80 backdrop-blur-xl border-b border-gray-100">
-        <div class="max-w-[1024px] mx-auto px-6 h-12 flex items-center justify-between">
-            <!-- Logo Oficial -->
-            <a href="{{ route('home') }}" class="z-50 opacity-90 hover:opacity-100 transition-opacity">
-                <img src="https://ambiderm.com.mx/img/new/logo-ambiderm-azul.svg" alt="Ambiderm Logo"
-                    class="h-8 w-auto">
-            </a>
-
-            <!-- Desktop Menu -->
-            <div
-                class="hidden md:flex items-center space-x-8 text-[12px] font-normal text-gray-800 tracking-tight h-full">
-                <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors uppercase">INICIO</a>
-                <a href="{{ route('nosotros') }}" class="hover:text-blue-600 transition-colors uppercase">NOSOTROS</a>
-
-                <!-- Dropdown Productos -->
-                <div class="relative group h-full flex items-center">
-                    <button class="text-blue-600 font-bold transition-colors flex items-center gap-1 uppercase">
-                        PRODUCTOS <i data-lucide="chevron-down"
-                            class="w-3 h-3 transition-transform group-hover:rotate-180"></i>
-                    </button>
-                    <div
-                        class="absolute top-[48px] left-1/2 -translate-x-1/2 w-48 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-2xl py-4 flex flex-col gap-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 -translate-y-2">
-                        <a href="{{ route('productos') }}"
-                            class="px-6 py-2 hover:bg-gray-50 hover:text-blue-600 font-bold transition-colors">GUANTES</a>
-                        <a href="https://ambiderm.com.mx/categoria/dental"
-                            class="px-6 py-2 hover:bg-gray-50 hover:text-blue-600 transition-colors">DENTAL</a>
-                        <a href="https://ambiderm.com.mx/categoria/insumos-medicos"
-                            class="px-6 py-2 hover:bg-gray-50 hover:text-blue-600 transition-colors">INSUMOS MÉDICOS</a>
-                        <a href="https://ambiderm.com.mx/categoria/ropa-medica"
-                            class="px-6 py-2 hover:bg-gray-50 hover:text-blue-600 transition-colors">ROPA MÉDICA</a>
-                    </div>
-                </div>
-
-                <a href="https://shop.ambiderm.com.mx/" target="_blank"
-                    class="hover:text-blue-600 transition-colors uppercase">TIENDA EN LÍNEA</a>
-                <a href="#contacto" class="hover:text-blue-600 transition-colors uppercase">CONTACTO</a>
-            </div>
-
-            <div class="hidden md:flex items-center gap-6 text-gray-800">
-                <a href="https://shop.ambiderm.com.mx/" class="hover:text-blue-600 transition-colors">
-                    <i data-lucide="shopping-bag" class="w-4 h-4 stroke-[1.5]"></i>
-                </a>
-            </div>
-
-            <button id="menu-toggle" class="md:hidden z-50 text-gray-800 focus:outline-none">
-                <i data-lucide="menu" id="menu-icon-open"></i>
-                <i data-lucide="x" id="menu-icon-close" class="hidden"></i>
-            </button>
-        </div>
-
-        <!-- Mobile Dropdown -->
-        <div id="mobile-menu"
-            class="fixed inset-0 w-full h-screen bg-white pt-24 px-10 flex flex-col gap-6 text-xl font-medium md:hidden overflow-y-auto">
-            <a href="{{ route('home') }}" class="text-gray-900 mobile-link">Inicio</a>
-            <a href="{{ route('nosotros') }}" class="text-gray-900 mobile-link">Nosotros</a>
-            <div class="flex flex-col gap-4">
-                <p class="text-[12px] font-bold text-gray-400 uppercase tracking-widest mt-4">Categorías</p>
-                <a href="{{ route('productos') }}" class="text-blue-600 font-bold mobile-link pl-4">Guantes</a>
-                <a href="https://ambiderm.com.mx/categoria/dental" class="text-gray-900 mobile-link pl-4">Dental</a>
-                <a href="https://ambiderm.com.mx/categoria/insumos-medicos"
-                    class="text-gray-900 mobile-link pl-4">Insumos</a>
-                <a href="https://ambiderm.com.mx/categoria/ropa-medica" class="text-gray-900 mobile-link pl-4">Ropa</a>
-            </div>
-            <div class="h-[1px] bg-gray-200 w-full my-4"></div>
-            <a href="https://shop.ambiderm.com.mx/" class="text-gray-900 mobile-link">Tienda en Línea</a>
-            <a href="#contacto" class="text-gray-900 mobile-link">Contacto</a>
-        </div>
-    </nav>
+<x-layouts.public title="Guantes Vinyl Light - Ambiderm">
 
     <!-- --- BREADCRUMB --- -->
     <div class="pt-24 pb-4 px-6 md:px-12 bg-white">
         <div class="max-w-[1240px] mx-auto flex items-center text-xs text-gray-400 uppercase tracking-widest gap-2">
-            <a href="{{ route('home') }}" class="hover:text-blue-600 transition-colors">Inicio</a>
+            <a href="{{ route('home') }}" class="hover:text-brand-blue transition-colors">Inicio</a>
             <span class="text-gray-300">/</span>
-            <a href="{{ route('productos') }}" class="hover:text-blue-600 transition-colors">Productos</a>
+            <a href="{{ route('productos') }}" class="hover:text-brand-blue transition-colors">Productos</a>
             <span class="text-gray-300">/</span>
-            <span class="text-blue-600 font-bold">Vinyl Light</span>
+            <span class="text-brand-blue font-bold">Vinyl Light</span>
         </div>
     </div>
 
@@ -190,14 +16,9 @@
         <div class="max-w-[1240px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24">
 
             <!-- Column LEFT: Image Gallery -->
-            <div class="relative sticky-col">
-                <div
-                    class="relative bg-[#f5f5f7] rounded-[40px] aspect-square flex items-center justify-center p-8 lg:p-16 overflow-hidden reveal reveal-scale-in">
-                    <!-- Background Blob -->
-                    <div
-                        class="absolute inset-0 bg-blue-100/50 blur-[80px] rounded-full scale-75 opacity-0 active-color-bg transition-opacity duration-500">
-                    </div>
-
+            <div class="relative">
+                <div class="relative bg-brand-surface rounded-[40px] aspect-square flex items-center justify-center p-8 lg:p-16 overflow-hidden reveal reveal-scale-in">
+                    <div class="absolute inset-0 bg-blue-100/50 blur-[80px] rounded-full scale-75 opacity-0 active-color-bg transition-opacity duration-500"></div>
                     <img id="main-product-image"
                         src="https://ambiderm.com.mx/storage/productos/aivP4FTdVJl9cMk0FU3Dvd4o0RJtwJmxrhmvQDI8.png"
                         alt="Guante Vinyl Light"
@@ -208,14 +29,11 @@
             <!-- Column RIGHT: Product Info -->
             <div class="flex flex-col justify-center reveal reveal-fade-in" style="transition-delay: 200ms;">
                 <div class="mb-2">
-                    <span
-                        class="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-widest border border-blue-100">Nuevo</span>
-                    <span
-                        class="inline-block px-3 py-1 rounded-full bg-gray-50 text-gray-500 text-[10px] font-bold uppercase tracking-widest border border-gray-100 ml-2">Libre
-                        de Látex</span>
+                    <span class="inline-block px-3 py-1 rounded-full bg-blue-50 text-brand-blue text-[10px] font-bold uppercase tracking-widest border border-blue-100">Nuevo</span>
+                    <span class="inline-block px-3 py-1 rounded-full bg-gray-50 text-gray-500 text-[10px] font-bold uppercase tracking-widest border border-gray-100 ml-2">Libre de Látex</span>
                 </div>
 
-                <h1 class="text-4xl md:text-5xl font-black text-[#1d1d1f] mb-2 tracking-tight">Vinyl Light</h1>
+                <h1 class="text-4xl md:text-5xl font-black text-brand-ink mb-2 tracking-tight">Vinyl Light</h1>
                 <p class="text-xl text-gray-500 font-medium mb-6">Guantes sintéticos de vinilo</p>
 
                 <p class="text-gray-600 leading-relaxed mb-8 text-lg">
@@ -230,11 +48,11 @@
                     <!-- Color Selector -->
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Color Seleccionado:
-                            <span id="color-name" class="text-[#1d1d1f]">Transparente</span>
+                            <span id="color-name" class="text-brand-ink">Transparente</span>
                         </p>
                         <div class="flex gap-4">
                             <button
-                                class="w-10 h-10 rounded-full bg-[#e2e2e2] ring-2 ring-offset-2 ring-blue-600 color-option active"
+                                class="w-10 h-10 rounded-full bg-[#e2e2e2] ring-2 ring-offset-2 ring-brand-blue color-option active"
                                 data-color="Transparente"
                                 data-img="https://ambiderm.com.mx/storage/productos/aivP4FTdVJl9cMk0FU3Dvd4o0RJtwJmxrhmvQDI8.png"></button>
                         </div>
@@ -244,12 +62,9 @@
                     <div>
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Talla</p>
                         <div class="flex gap-3">
-                            <button
-                                class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">S</button>
-                            <button
-                                class="size-option w-12 h-12 rounded-xl bg-[#1d1d1f] text-white border border-[#1d1d1f] font-bold flex items-center justify-center ring-2 ring-offset-2 ring-transparent active">M</button>
-                            <button
-                                class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">L</button>
+                            <button class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">S</button>
+                            <button class="size-option w-12 h-12 rounded-xl bg-brand-ink text-white border border-brand-ink font-bold flex items-center justify-center ring-2 ring-offset-2 ring-transparent active">M</button>
+                            <button class="size-option w-12 h-12 rounded-xl border border-gray-200 text-gray-500 font-bold hover:bg-gray-50 flex items-center justify-center">L</button>
                         </div>
                     </div>
                 </div>
@@ -257,19 +72,19 @@
                 <!-- Feature List -->
                 <ul class="space-y-3 mb-10">
                     <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-blue-600 mr-3"></i> No estéril
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> No estéril
                     </li>
                     <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-blue-600 mr-3"></i> Textura lisa
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Textura lisa
                     </li>
                     <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-blue-600 mr-3"></i> Ambidiestro
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Ambidiestro
                     </li>
                     <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-blue-600 mr-3"></i> Antiestáticos
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Antiestáticos
                     </li>
                     <li class="flex items-center text-gray-600 font-medium">
-                        <i data-lucide="check-circle-2" class="w-5 h-5 text-blue-600 mr-3"></i> Libre de látex y polvo
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> Libre de látex y polvo
                     </li>
                 </ul>
 
@@ -277,15 +92,14 @@
                 <div class="flex flex-col sm:flex-row gap-4">
                     <a href="https://shop.ambiderm.com.mx/collections/guantes-de-vinyl/products/guante-vinyl-light"
                         target="_blank"
-                        class="flex-1 bg-blue-600 text-white font-bold py-4 rounded-full text-center hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
+                        class="flex-1 bg-brand-blue text-white font-bold py-4 rounded-full text-center hover:bg-brand-blue-hover hover:shadow-lg hover:shadow-blue-500/30 transition-all transform active:scale-[0.98] flex items-center justify-center gap-2">
                         <i data-lucide="shopping-bag" class="w-5 h-5"></i> COMPRAR EN LÍNEA
                     </a>
                     <a href="https://www.ambiderm.com.mx/catalogo/catalogo.pdf" target="_blank"
-                        class="flex-1 bg-gray-50 text-[#1d1d1f] font-bold py-4 rounded-full text-center border border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
+                        class="flex-1 bg-gray-50 text-brand-ink font-bold py-4 rounded-full text-center border border-gray-200 hover:bg-gray-100 transition-all flex items-center justify-center gap-2">
                         <i data-lucide="file-text" class="w-5 h-5"></i> FICHA TÉCNICA
                     </a>
                 </div>
-
             </div>
         </div>
     </section>
@@ -295,9 +109,8 @@
         <div class="max-w-[800px] mx-auto px-6">
 
             <div class="mb-4">
-                <button
-                    class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <span class="font-bold text-lg text-[#1d1d1f]">Información de Presentación</span>
+                <button class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
+                    <span class="font-bold text-lg text-brand-ink">Información de Presentación</span>
                     <i data-lucide="chevron-down" class="icon-chevron w-5 h-5 text-gray-400 transition-transform"></i>
                 </button>
                 <div class="accordion-content">
@@ -309,9 +122,8 @@
             </div>
 
             <div class="mb-4">
-                <button
-                    class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
-                    <span class="font-bold text-lg text-[#1d1d1f]">Normas y Certificaciones</span>
+                <button class="accordion-btn w-full bg-white p-6 rounded-2xl shadow-sm flex items-center justify-between hover:bg-gray-50 transition-colors">
+                    <span class="font-bold text-lg text-brand-ink">Normas y Certificaciones</span>
                     <i data-lucide="chevron-down" class="icon-chevron w-5 h-5 text-gray-400 transition-transform"></i>
                 </button>
                 <div class="accordion-content">
@@ -327,45 +139,42 @@
     <!-- --- RELATED PRODUCTS --- -->
     <section class="py-24 px-6 bg-white">
         <div class="max-w-[1240px] mx-auto">
-            <h2 class="text-2xl md:text-3xl font-black text-[#1d1d1f] mb-12 text-center">TAMBIÉN TE PUEDE INTERESAR</h2>
+            <h2 class="text-2xl md:text-3xl font-black text-brand-ink mb-12 text-center">TAMBIÉN TE PUEDE INTERESAR</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
 
-                <!-- Related 1 -->
                 <a href="{{ route('producto-detalle') }}"
-                    class="group block relative bg-[#f5f5f7] rounded-[30px] p-8 transition-transform hover:-translate-y-2">
+                    class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
                     <div class="aspect-square flex items-center justify-center mb-6">
                         <img src="https://ambiderm.com.mx/storage/productos/BDOCYI3GixLQoC1nmI7oFe6ZJ2F8vPpvMgSA8E8i.png"
                             class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
                     </div>
                     <div class="text-center">
-                        <h4 class="font-bold text-lg text-[#1d1d1f]">Nitrilo</h4>
+                        <h4 class="font-bold text-lg text-brand-ink">Nitrilo</h4>
                         <p class="text-sm text-gray-500">Resistencia Superior</p>
                     </div>
                 </a>
 
-                <!-- Related 2 -->
                 <a href="{{ route('producto-detalle') }}"
-                    class="group block relative bg-[#f5f5f7] rounded-[30px] p-8 transition-transform hover:-translate-y-2">
+                    class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
                     <div class="aspect-square flex items-center justify-center mb-6">
                         <img src="https://ambiderm.com.mx/storage/productos/rXujaebKU43gVFnzmjwJ5bLi1h0KRmWhnGYgA801.png"
                             class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
                     </div>
                     <div class="text-center">
-                        <h4 class="font-bold text-lg text-[#1d1d1f]">Vinyl LP</h4>
+                        <h4 class="font-bold text-lg text-brand-ink">Vinyl LP</h4>
                         <p class="text-sm text-gray-500">Alternativa Económica</p>
                     </div>
                 </a>
 
-                <!-- Related 3 -->
                 <a href="{{ route('producto-detalle') }}"
-                    class="group block relative bg-[#f5f5f7] rounded-[30px] p-8 transition-transform hover:-translate-y-2">
+                    class="group block relative bg-brand-surface rounded-[30px] p-8 transition-transform hover:-translate-y-2">
                     <div class="aspect-square flex items-center justify-center mb-6">
                         <img src="https://ambiderm.com.mx/storage/productos/QkXrYaiF6oth7KVYfKzsUYVlvjuEjtR18KA77UFZ.png"
                             class="w-full h-full object-contain mix-blend-multiply transition-transform group-hover:scale-105">
                     </div>
                     <div class="text-center">
-                        <h4 class="font-bold text-lg text-[#1d1d1f]">Polietileno</h4>
+                        <h4 class="font-bold text-lg text-brand-ink">Polietileno</h4>
                         <p class="text-sm text-gray-500">Uso ligero</p>
                     </div>
                 </a>
@@ -383,7 +192,7 @@
                         class="h-12 md:h-16">
                 </div>
                 <div class="text-center md:text-right reveal reveal-fade-in">
-                    <h4 class="text-2xl md:text-4xl font-black tracking-tighter text-[#1d1d1f] mb-6">
+                    <h4 class="text-2xl md:text-4xl font-black tracking-tighter text-brand-ink mb-6">
                         SÍGUENOS EN <span
                             class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-400">REDES
                             SOCIALES</span>
@@ -406,198 +215,67 @@
         <div class="py-12 px-6 border-t border-gray-100 bg-[#fbfbfd]">
             <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
                 <div class="text-center md:text-left">
-                    <p class="text-[10px] font-bold text-[#1d1d1f] tracking-widest mb-2 uppercase">COPYRIGHT © 2024
-                        AMBIDERM S.A.
-                        DE C.V.</p>
+                    <p class="text-[10px] font-bold text-brand-ink tracking-widest mb-2 uppercase">COPYRIGHT © 2024
+                        AMBIDERM S.A. DE C.V.</p>
                 </div>
                 <div class="flex flex-wrap justify-center gap-x-8 gap-y-2">
-                    <a href="#"
-                        class="text-[10px] font-bold text-gray-400 hover:text-blue-600 transition-colors uppercase tracking-widest">Aviso
-                        de Privacidad</a>
+                    <a href="#" class="text-[10px] font-bold text-gray-400 hover:text-brand-blue transition-colors uppercase tracking-widest">Aviso de Privacidad</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
+    <x-slot:scripts>
+        <style>
+            .color-option { transition: transform 0.2s; }
+            .color-option:hover, .color-option.active { transform: scale(1.1); }
+            .size-option { transition: all 0.2s; }
+            .size-option:hover { border-color: #0071e3; color: #0071e3; }
+            .size-option.active { background-color: #1d1d1f; color: white; border-color: #1d1d1f; }
+            .accordion-content { transition: max-height 0.3s ease-out; max-height: 0; overflow: hidden; }
+            .accordion-btn.active .icon-chevron { transform: rotate(180deg); }
+        </style>
+        <script>
+            // COLOR SELECTOR
+            const colorBtns        = document.querySelectorAll('.color-option');
+            const colorNameDisplay = document.getElementById('color-name');
+            const mainImage        = document.getElementById('main-product-image');
 
-        // Initialize Lenis Smooth Scroll
-        const lenis = new Lenis();
-        function raf(time) {
-            lenis.raf(time);
-            requestAnimationFrame(raf);
-        }
-        requestAnimationFrame(raf);
-
-        // Reveal Animation
-        const revealElements = document.querySelectorAll('.reveal');
-        const revealObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                }
-            });
-        }, { threshold: 0.1 });
-        revealElements.forEach(el => revealObserver.observe(el));
-
-        // Mobile Menu
-        const menuToggle = document.getElementById('menu-toggle');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuIconOpen = document.getElementById('menu-icon-open');
-        const menuIconClose = document.getElementById('menu-icon-close');
-
-        menuToggle.addEventListener('click', () => {
-            const isOpen = mobileMenu.classList.toggle('active');
-            if (isOpen) {
-                menuIconOpen.classList.add('hidden');
-                menuIconClose.classList.remove('hidden');
-                document.body.style.overflow = 'hidden';
-            } else {
-                menuIconOpen.classList.remove('hidden');
-                menuIconClose.classList.add('hidden');
-                document.body.style.overflow = '';
-            }
-        });
-
-        // Color & Size Selector Logic (Simulated)
-        const colorBtns = document.querySelectorAll('.color-option');
-        const sizeBtns = document.querySelectorAll('.size-option');
-        const colorNameDisplay = document.getElementById('color-name');
-        const mainImage = document.getElementById('main-product-image');
-
-        colorBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                colorBtns.forEach(b => {
-                    b.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-blue-600');
-                    b.classList.add('opacity-50');
+            colorBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    colorBtns.forEach(b => {
+                        b.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-brand-blue');
+                        b.classList.add('opacity-50');
+                    });
+                    btn.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-brand-blue');
+                    btn.classList.remove('opacity-50');
+                    colorNameDisplay.textContent = btn.dataset.color;
+                    if (btn.dataset.img) mainImage.src = btn.dataset.img;
                 });
-                btn.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-blue-600');
-                btn.classList.remove('opacity-50');
-                colorNameDisplay.textContent = btn.getAttribute('data-color');
             });
-        });
 
-        sizeBtns.forEach(btn => {
-            btn.addEventListener('click', () => {
-                sizeBtns.forEach(b => {
-                    b.classList.remove('active', 'bg-[#1d1d1f]', 'text-white', 'ring-2', 'ring-offset-2');
-                    b.classList.add('text-gray-500', 'border-gray-200');
+            // SIZE SELECTOR
+            const sizeBtns = document.querySelectorAll('.size-option');
+            sizeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    sizeBtns.forEach(b => {
+                        b.classList.remove('active');
+                        b.classList.add('text-gray-500', 'border-gray-200');
+                    });
+                    btn.classList.add('active');
+                    btn.classList.remove('text-gray-500', 'border-gray-200');
                 });
-                btn.classList.add('active', 'bg-[#1d1d1f]', 'text-white', 'ring-2', 'ring-offset-2');
-                btn.classList.remove('text-gray-500', 'border-gray-200');
             });
-        });
 
-        // Accordion Logic
-        const accordions = document.querySelectorAll('.accordion-btn');
-        accordions.forEach(acc => {
-            acc.addEventListener('click', () => {
-                acc.classList.toggle('active');
-                const panel = acc.nextElementSibling;
-                if (panel.style.maxHeight) {
-                    panel.style.maxHeight = null;
-                } else {
-                    panel.style.maxHeight = panel.scrollHeight + "px";
-                }
+            // ACCORDION
+            document.querySelectorAll('.accordion-btn').forEach(acc => {
+                acc.addEventListener('click', () => {
+                    acc.classList.toggle('active');
+                    const panel = acc.nextElementSibling;
+                    panel.style.maxHeight = panel.style.maxHeight ? null : panel.scrollHeight + 'px';
+                });
             });
-        });
-    </script>
-    <!-- --- CHATBOT FLOTANTE --- -->
-    <div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
-        <!-- Ventana de Chat -->
-        <div id="chat-window"
-            class="w-[350px] bg-white rounded-[30px] border border-gray-100 shadow-[0_20px_50px_rgba(0,113,227,0.15)] overflow-hidden hidden opacity-0 translate-y-10 transition-all duration-500 transform origin-bottom-right">
-            <!-- Header del Chat -->
-            <div class="bg-gradient-to-r from-blue-600 to-blue-400 p-8 text-white">
-                <div class="flex items-center gap-4 mb-2">
-                    <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center">
-                        <i data-lucide="message-circle" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-lg leading-tight">Asistente Ambiderm</h4>
-                        <p class="text-white/80 text-xs">En línea ahora</p>
-                    </div>
-                </div>
-            </div>
+        </script>
+    </x-slot:scripts>
 
-            <!-- Contenido del Chat -->
-            <div class="p-6 space-y-6">
-                <div class="bg-gray-50 p-4 rounded-2xl rounded-tl-none text-gray-700 text-sm leading-relaxed text-left">
-                    ¡Hola! 👋 Bienvenido a Ambiderm. ¿En qué podemos ayudarte hoy? Selecciona una opción:
-                </div>
-
-                <div class="space-y-3">
-                    <button
-                        class="w-full p-4 text-left border border-gray-100 rounded-xl hover:bg-blue-50 hover:border-blue-100 transition-all text-sm font-semibold text-gray-700 flex items-center justify-between group">
-                        Quiero ser distribuidor
-                        <i data-lucide="chevron-right"
-                            class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
-                    </button>
-                    <button
-                        class="w-full p-4 text-left border border-gray-100 rounded-xl hover:bg-blue-50 hover:border-blue-100 transition-all text-sm font-semibold text-gray-700 flex items-center justify-between group">
-                        Comprar en línea
-                        <i data-lucide="chevron-right"
-                            class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
-                    </button>
-                    <button
-                        class="w-full p-4 text-left border border-gray-100 rounded-xl hover:bg-blue-50 hover:border-blue-100 transition-all text-sm font-semibold text-gray-700 flex items-center justify-between group">
-                        Contactar a un asesor
-                        <i data-lucide="chevron-right"
-                            class="w-4 h-4 text-gray-300 group-hover:text-blue-500 transition-colors"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Footer del Chat -->
-            <div class="p-4 bg-gray-50 text-center">
-                <p class="text-[10px] text-gray-400 uppercase tracking-widest font-bold">Respuesta en menos de 2 min</p>
-            </div>
-        </div>
-
-        <!-- Botón Flotante -->
-        <button id="chat-toggle"
-            class="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 via-blue-400 to-cyan-400 text-white flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all shadow-blue-500/40 relative group focus:outline-none">
-            <i id="chat-icon-open" data-lucide="message-circle"
-                class="w-8 h-8 group-hover:rotate-12 transition-transform"></i>
-            <i id="chat-icon-close" data-lucide="x"
-                class="w-8 h-8 hidden group-hover:scale-110 transition-transform"></i>
-            <!-- Badge de notificación -->
-            <span class="absolute top-0 right-0 w-5 h-5 bg-red-500 border-2 border-white rounded-full"></span>
-        </button>
-    </div>
-
-    <script>
-        // --- CHATBOT TOGGLE ---
-        const chatToggle = document.getElementById('chat-toggle');
-        const chatWindow = document.getElementById('chat-window');
-        const chatIconOpen = document.getElementById('chat-icon-open');
-        const chatIconClose = document.getElementById('chat-icon-close');
-
-        if (chatToggle) {
-            chatToggle.addEventListener('click', () => {
-                const isHidden = chatWindow.classList.contains('hidden');
-
-                if (isHidden) {
-                    chatWindow.classList.remove('hidden');
-                    setTimeout(() => {
-                        chatWindow.classList.replace('opacity-0', 'opacity-100');
-                        chatWindow.classList.replace('translate-y-10', 'translate-y-0');
-                    }, 10);
-                    chatIconOpen.classList.add('hidden');
-                    chatIconClose.classList.remove('hidden');
-                } else {
-                    chatWindow.classList.replace('opacity-100', 'opacity-0');
-                    chatWindow.classList.replace('translate-y-0', 'translate-y-10');
-                    setTimeout(() => chatWindow.classList.add('hidden'), 500);
-                    chatIconOpen.classList.remove('hidden');
-                    chatIconClose.classList.add('hidden');
-                }
-            });
-        }
-    </script>
-
-</body>
-
-</html>
+</x-layouts.public>

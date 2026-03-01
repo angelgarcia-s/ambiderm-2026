@@ -9,8 +9,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    /* --- Tipografía --- */
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
+    /* --- Zinc palette (usada por Flux en el admin) --- */
     --color-zinc-50: #fafafa;
     --color-zinc-100: #f5f5f5;
     --color-zinc-200: #e5e5e5;
@@ -23,16 +25,24 @@
     --color-zinc-900: #171717;
     --color-zinc-950: #0a0a0a;
 
-    --color-accent: var(--color-neutral-800);
-    --color-accent-content: var(--color-neutral-800);
-    --color-accent-foreground: var(--color-white);
+    /* --- Paleta de marca Ambiderm (GUIA_ESTILO.md) --- */
+    --color-brand-blue: #0071e3;       /* Acción primaria — botones, links */
+    --color-brand-blue-hover: #0077ed; /* Estado hover del azul */
+    --color-brand-surface: #f5f5f7;    /* Fondo alterno — Hero, secciones */
+    --color-brand-ink: #1d1d1f;        /* Texto títulos — negro profundo */
+    --color-brand-subtle: #86868b;     /* Texto cuerpo — gris refinado */
+
+    /* --- Accent Flux — azul de marca Ambiderm --- */
+    --color-accent: #0071e3;
+    --color-accent-content: #0071e3;
+    --color-accent-foreground: #ffffff;
 }
 
 @layer theme {
     .dark {
-        --color-accent: var(--color-white);
-        --color-accent-content: var(--color-white);
-        --color-accent-foreground: var(--color-neutral-800);
+        --color-accent: #0071e3;
+        --color-accent-content: #60a5fa;
+        --color-accent-foreground: #ffffff;
     }
 }
 
@@ -64,3 +74,49 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* ============================================================
+   Reveal Animation System — Ambiderm (GUIA_ESTILO.md §3)
+   Basado en Intersection Observer. JS agrega clase .active.
+   ============================================================ */
+@layer utilities {
+    .reveal {
+        opacity: 0;
+        transition: opacity 1000ms ease-out, transform 1000ms ease-out;
+    }
+
+    .reveal-fade-in {
+        transform: translateY(3rem);
+    }
+
+    .reveal-scale-in {
+        transform: scale(0.9);
+    }
+
+    .reveal.active {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    /* Oculta scrollbar manteniendo funcionalidad de scroll */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+}
+
+/* ============================================================
+   Mobile Menu — estado manejado por JS con clase .active
+   ============================================================ */
+@layer base {
+    #mobile-menu {
+        transition: opacity 300ms ease-in-out, transform 300ms ease-in-out;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    #mobile-menu.active {
+        pointer-events: auto;
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

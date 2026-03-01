@@ -58,6 +58,7 @@ Al inicio de cada sesión, Angel indicará qué rol toma Claude Code:
 | Contracts (modelos y reglas) | `docs/contracts/` |
 | Issues activos | `docs/issues/` |
 | Features documentadas | `docs/features/` |
+| Guía de estilos UI | `_backup_static/GUIA_ESTILO.md` |
 
 ---
 
@@ -68,17 +69,23 @@ Al inicio de cada sesión, Angel indicará qué rol toma Claude Code:
 <tipo>(<módulo>): <descripción en español> (<referencia>)
 ```
 Ejemplos:
-- `feat(saas): se implementa administración de roles (ADR-005)`
-- `fix(core): se corrige asignación de permisos en seeders (BUG-001)`
-- `docs(adr): se documenta enmienda 2 de ADR-005`
+- `feat(productos): se implementa catálogo de productos en panel admin (ADR-004)`
+- `fix(auth): se corrige redirección post-login (BUG-001)`
+- `docs(adr): se documenta ADR-002 sistema de roles`
 
 Tipos válidos: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
 
 ### PHP (Laravel)
-- Namespaces con mayúscula: `Modules\Core\...`, no `modules\core\...`
-- Permisos: `spatie/laravel-permission` con `categoria`
+- Namespaces PSR-4 con mayúscula: `App\Models\...`, `App\Http\Controllers\...`
+- Permisos vía `spatie/laravel-permission` con `HasRoles` en el modelo User
+- Livewire components en `app/Livewire/`
+- Views Blade en `resources/views/`
 
-###  (Frontend)
+### Frontend (Blade + Livewire + Flux)
+- Componentes Flux: `<flux:button>`, `<flux:input>`, `<flux:modal>`, etc.
+- Layouts: `<x-layouts::app>` para panel admin, `<x-layouts::auth>` para auth
+- Tailwind v4 via pipeline Vite — **NO usar CDN de Tailwind** en vistas nuevas
+- Iconos: Lucide Icons (via CDN en páginas públicas, via Flux en panel admin)
+- Tipografía: Inter, estética "Apple-inspired" (ver `_backup_static/GUIA_ESTILO.md`)
 
 ---
-
