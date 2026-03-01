@@ -3,7 +3,8 @@
     "allow": [
       "Bash(*)",
       "Read(*)",
-      "Write(*)"
+      "Write(*)",
+      "Git(*)"
     ]
   }
 }

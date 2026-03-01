@@ -2,7 +2,7 @@
 
 **Última actualización:** 2026-03-01
 **Responsable:** Agent.Orchestrator
-**Estado del proyecto:** Fase inicial — infraestructura base lista, features del panel admin por definir
+**Estado del proyecto:** Vistas públicas migradas a Vite pipeline — panel admin por definir
 
 ---
 
@@ -71,10 +71,14 @@ resources/views/
 ├── layouts/
 │   ├── app.blade.php         # Layout del panel admin (Flux sidebar)
 │   └── auth.blade.php        # Layout de autenticación
+├── components/
+│   └── layouts/
+│       └── public.blade.php  # Layout compartido para vistas públicas (nav, chatbot, lenis, JS)
 ├── pages/
 │   ├── auth/                 # Login, register, 2FA, verify-email, etc.
 │   └── settings/             # Perfil, password, appearance, two-factor
-├── components/               # Componentes blade reutilizables
+├── partials/
+│   └── head.blade.php        # <head> para panel admin (Flux)
 ├── home.blade.php            # Página pública: inicio
 ├── acerca-de-ambiderm.blade.php  # Página pública: nosotros
 ├── productos-ambiderm.blade.php  # Página pública: catálogo de guantes
@@ -105,20 +109,21 @@ routes/
 | Dashboard base | Vista placeholder (sin contenido real) | ✅ (placeholder) |
 | Rutas públicas | 5 páginas públicas sirviendo Blade | ✅ |
 | Migration permisos | Tablas de Spatie creadas en DB | ✅ |
+| **Brand tokens CSS** | `@theme` en app.css con paleta completa de Ambiderm | ✅ |
+| **Layout público compartido** | `components/layouts/public.blade.php` con nav, chatbot, lenis | ✅ |
+| **Migración CDN → Vite** | Todas las vistas públicas usan pipeline Vite (TD-001 resuelto) | ✅ |
 
 ### Pendiente — Decisiones Arquitectónicas
 | ADR | Decisión | Prioridad |
 |-----|----------|-----------|
 | ADR-001 | Sistema de roles y permisos de Ambiderm (qué roles existen) | ALTA |
-| ADR-002 | Integración CSS: páginas públicas vía Vite (no CDN) | ALTA |
 | ADR-003 | Alcance del panel admin (qué módulos tendrá) | ALTA |
 | ADR-004 | Gestión de productos (CRUD en admin) | MEDIA |
 
 ### Deuda técnica
 | Issue | Descripción | Severidad |
 |-------|-------------|-----------|
-| TD-001 | Páginas Blade públicas usan Tailwind CDN (no Vite) | 🟡 ALTO |
-| TD-002 | `User` model no tiene `HasRoles` de Spatie | 🟡 ALTO |
+| TD-002 | `User` model no tiene `HasRoles` de Spatie | ✅ Resuelto (2026-03-01) |
 
 ---
 
@@ -140,12 +145,15 @@ Panel Admin (propuesta inicial — sujeto a revisión):
 
 ### Estética del sitio público
 - Inspiración: "Apple-inspired" — limpio, premium, minimalista
-- Tipografía: **Inter** (Google Fonts)
-- Colores principales:
-  - Fondo: `#ffffff` / `#f5f5f7`
-  - Texto: `#1d1d1f` (títulos) / `#86868b` (cuerpo)
-  - Acción: `#0071e3` (azul de marca)
-- Animaciones: Intersection Observer (reveal-fade-in, reveal-scale-in)
+- Tipografía: **Inter** (bunny.net CDN)
+- Colores principales (Tailwind v4 `@theme` tokens):
+  - `brand-surface`: `#f5f5f7` — fondos alternos, hero sections
+  - `brand-ink`: `#1d1d1f` — texto títulos, negro profundo
+  - `brand-subtle`: `#86868b` — texto cuerpo, gris refinado
+  - `brand-blue`: `#0071e3` — acción primaria, botones, links
+  - `brand-blue-hover`: `#0077ed` — estado hover
+- Animaciones: Intersection Observer (`.reveal`, `.reveal-fade-in`, `.reveal-scale-in`, `.reveal.active`)
+- Smooth scroll: Lenis (`window.lenis` expuesto globalmente)
 - Ver guía completa: [`_backup_static/GUIA_ESTILO.md`](../_backup_static/GUIA_ESTILO.md)
 
 ### Estética del panel admin
