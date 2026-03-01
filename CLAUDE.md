@@ -6,11 +6,14 @@ Este archivo se carga automáticamente al inicio de cada sesión. Léelo complet
 
 ## 1. Proyecto
 
-**Proyecto** es una plataforma.
+**Ambiderm 2026** es el sitio web corporativo y panel de administración de Ambiderm — empresa 100% mexicana con más de 30 años fabricando y comercializando guantes y productos desechables para el sector médico.
 
-- **Stack**: Laravel 10 + 
-- **Estilos**: Tailwind CSS v 
-
+- **Stack Backend**: Laravel 12 + Livewire v4 + Flux UI + Fortify
+- **Stack Frontend**: Tailwind CSS v4 (pipeline Vite) + Lucide Icons
+- **Auth**: Laravel Fortify (login, registro, 2FA, recuperación de contraseña)
+- **Permisos**: Spatie laravel-permission v7
+- **Build**: Vite v7
+- **DB (dev)**: SQLite
 
 ---
 
@@ -38,7 +41,7 @@ Al inicio de cada sesión, Angel indicará qué rol toma Claude Code:
 |-----|----------|-------------|
 | **Orchestrator** | Crea/revisa ADRs y Contracts, coordina workflow | NO implementa código |
 | **Backend** | Migrations, Models, Services, Controllers, Policies | NO cambia frontend |
-| **Frontend** | Pages Inertia, Components Vue, UI/UX | NO cambia backend |
+| **Frontend** | Views Blade/Livewire, Componentes Flux, UI/UX | NO cambia backend |
 | **QA** | Revisa tests, detecta edge cases, valida criterios | NO implementa features |
 | **Context** | Actualiza `PROJECT_CONTEXT.md` post-merge | NO implementa código |
 | **FeatureDocs** | Documenta features en `docs/features/` | NO implementa código |
