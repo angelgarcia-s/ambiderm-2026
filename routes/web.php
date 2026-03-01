@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'home')->name('home');
 
-Route::view('/nosotros', 'acerca-de-ambiderm')->name('nosotros');
+Route::view('/nosotros', 'acerca-de')->name('nosotros');
 
 Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
 Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');
