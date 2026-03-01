@@ -13,11 +13,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Primero crear roles y permisos (antes de asignar roles a usuarios)
+        $this->call(RolesAndPermissionsSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Super Admin de Ambiderm
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@ambiderm.com.mx'],
+            [
+                'name' => 'Admin Ambiderm',
+                'password' => bcrypt('12345678'),
+            ]
+        );
+        $admin->syncRoles(['super_admin']);
     }
 }
