@@ -82,6 +82,17 @@
                         @endcan
                     </flux:sidebar.group>
                 @endcanany
+
+                @can('paginas.ver')
+                    <flux:sidebar.group heading="Contenido" class="grid">
+                        <flux:sidebar.item icon="document-text"
+                                          :href="route('admin.paginas.index')"
+                                          :current="request()->routeIs('admin.paginas.*')"
+                                          wire:navigate>
+                            Páginas
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endcan
             </flux:sidebar.nav>
 
             <flux:spacer />

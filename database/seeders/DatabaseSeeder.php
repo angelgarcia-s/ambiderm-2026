@@ -25,5 +25,8 @@ class DatabaseSeeder extends Seeder
             ]
         );
         $admin->syncRoles(['super_admin']);
+
+        // Contenido de páginas públicas (ADR-002)
+        $this->call(SeccionesContenidoSeeder::class);
     }
 }
