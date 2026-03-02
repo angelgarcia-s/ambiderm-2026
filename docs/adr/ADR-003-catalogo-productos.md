@@ -1,6 +1,6 @@
 # ADR-003 — Catálogo de Productos (CMS Admin)
 
-**Estado:** Borrador
+**Estado:** Aprobado
 **Fecha:** 2026-03-01
 **Autor:** Agent.Orchestrator
 **Branch:** `feature/adr003-catalogo-productos`

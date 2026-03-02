@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Models\Categoria;
 use App\Models\Producto;
+use App\Models\SeccionContenido;
 use App\Policies\CategoriaPolicy;
 use App\Policies\ProductoPolicy;
 use App\Policies\RolePolicy;
+use App\Policies\SeccionContenidoPolicy;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
@@ -64,5 +66,6 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Role::class, RolePolicy::class);
         Gate::policy(Categoria::class, CategoriaPolicy::class);
         Gate::policy(Producto::class, ProductoPolicy::class);
+        Gate::policy(SeccionContenido::class, SeccionContenidoPolicy::class);
     }
 }

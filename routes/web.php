@@ -2,19 +2,22 @@
 
 use App\Http\Controllers\Admin\CategoriasController;
 use App\Http\Controllers\Admin\ColoresController;
+use App\Http\Controllers\Admin\PaginasController;
 use App\Http\Controllers\Admin\PermisosController;
 use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\TamanosController;
 use App\Http\Controllers\Admin\UsuariosController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NosotrosController;
 use App\Http\Controllers\ProductosPublicController;
 use Illuminate\Support\Facades\Route;
 
 // frontend routes
 
-Route::view('/', 'home')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
-Route::view('/nosotros', 'acerca-de')->name('nosotros');
+Route::get('/nosotros', [NosotrosController::class, 'index'])->name('nosotros');
 
 Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
 Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');
@@ -75,6 +78,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('colores', [ColoresController::class, 'index'])
             ->middleware('can:productos.crear')
             ->name('colores.index');
+
+        // Páginas públicas CMS (ADR-002)
+        Route::get('paginas', [PaginasController::class, 'index'])
+            ->middleware('can:paginas.ver')
+            ->name('paginas.index');
+        Route::get('paginas/{pagina}/{seccion}/editar', [PaginasController::class, 'edit'])
+            ->middleware('can:paginas.editar')
+            ->name('paginas.edit');
     });
 });
 
