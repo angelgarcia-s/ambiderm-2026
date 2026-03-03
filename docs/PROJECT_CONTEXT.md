@@ -64,7 +64,7 @@ app/
 ├── Concerns/                     # Traits de validación
 ├── Http/Controllers/
 │   ├── Controller.php            # Base controller
-│   ├── HomeController.php        # Página inicio — usa ContenidoService
+│   ├── HomeController.php        # Página inicio — ContenidoService + productosDestacados (cache 1h)
 │   ├── NosotrosController.php    # Página nosotros — usa ContenidoService
 │   ├── ProductosPublicController.php  # Catálogo público — Producto + Categoria
 │   └── Admin/
@@ -84,10 +84,10 @@ app/
 │       │   ├── Index.php              # Listado + crear + eliminar roles
 │       │   └── Edit.php               # Editar rol + checkboxes permisos
 │       ├── Permisos/Index.php         # Read-only agrupado por módulo
-│       ├── Categorias/Index.php       # CRUD categorías
+│       ├── Categorias/Index.php       # CRUD categorías + invalidación cache nav
 │       ├── Productos/
-│       │   ├── Index.php              # Listado productos con filtros
-│       │   └── Form.php               # Crear/Editar producto
+│       │   ├── Index.php              # Listado productos con filtros + invalidación cache
+│       │   └── Form.php               # Crear/Editar producto + invalidación cache
 │       ├── Colores/Index.php          # CRUD colores
 │       ├── Tamanos/Index.php          # CRUD tamaños
 │       └── Paginas/
@@ -109,7 +109,7 @@ app/
 ├── Services/
 │   └── ContenidoService.php   # Cache 24h, obtener(), obtenerPagina(), fallback por defecto
 └── Providers/
-    ├── AppServiceProvider.php
+    ├── AppServiceProvider.php      # View Composer: $categoriasNav (cache 24h) al layout público
     └── FortifyServiceProvider.php
 
 database/
@@ -161,7 +161,7 @@ resources/views/
 ├── partials/
 │   ├── footer.blade.php       # Footer compartido dinámico ($footer CMS)
 │   └── head.blade.php
-├── home.blade.php             # Página inicio — dinámico, $secciones CMS
+├── home.blade.php             # Página inicio — dinámico, $secciones CMS + $productosDestacados
 ├── acerca-de.blade.php        # Página nosotros — dinámico, $secciones CMS
 ├── productos-ambiderm.blade.php   # Catálogo público (ADR-003)
 ├── producto-detalle.blade.php     # Detalle de producto (ADR-003)
@@ -180,6 +180,8 @@ routes/
 - **Blade puro** para páginas públicas (sin Livewire donde no se necesite interactividad)
 - **Spatie Permission** para roles y permisos granulares
 - **ContenidoService** — servicio estático con cache 24h y fallback automático para CMS
+- **View Composer** en AppServiceProvider — comparte `$categoriasNav` (cache 24h) con layout público
+- **Cache invalidation** — los componentes Livewire admin invalidan caches públicos al mutar datos
 
 ---
 
@@ -206,6 +208,10 @@ routes/
 | **Vistas públicas dinámicas** | home.blade.php, acerca-de.blade.php, footer.blade.php usan CMS | ✅ **main** |
 | **ADR-003 — Catálogo de Productos** | CRUD productos, categorías, colores, tamaños | ✅ **main (PR #2)** |
 | **Catálogo público** | ProductosPublicController con filtro por categoría | ✅ **main** |
+| **Colección dinámica (home)** | Sección "La Colección" muestra productos destacados de DB con cache 1h | ✅ **main** |
+| **Menú dinámico de productos** | Nav header con categorías dinámicas desde DB (View Composer, cache 24h) | ✅ **main** |
+| **Invalidación automática de caché** | Al guardar/eliminar productos o categorías se invalida caché público | ✅ **main** |
+| **ContenidoService fallback** | Defaults vacíos para las 15 secciones si faltan en DB | ✅ **main** |
 
 ### ADRs — Estado
 | ADR | Descripción | Estado |
@@ -261,6 +267,7 @@ Contenido     → Páginas
 - `obtenerPagina(pagina)`: Collection keyed por sección (cache 24h)
 - `invalidarCache(pagina, seccion?)`: invalidación manual (se llama al guardar desde admin)
 - **Fallback automático**: si una sección falta en DB, retorna mock `SeccionContenido` con contenido vacío
+- `$defaults`: array interno con contenido vacío para las 15 secciones (home×6, nosotros×5, footer×4)
 
 ### Flujo de datos: DB → Cache → Controller → Vista
 ```
@@ -271,12 +278,23 @@ SeccionContenido (DB) → ContenidoService (cache 24h) → HomeController/Nosotr
 
 ---
 
+## 7b. Estrategia de caché
+
+| Clave | TTL | Qué cachea | Invalidado por |
+|-------|-----|------------|----------------|
+| `contenido.{pagina}` | 24h | Secciones CMS por página | `ContenidoService::invalidarCache()` al editar sección en admin |
+| `contenido.{pagina}.{seccion}` | 24h | Sección CMS individual | `ContenidoService::invalidarCache()` al editar sección en admin |
+| `home.productos_destacados` | 1h | Productos activos+destacados+ordenados con colores y categorías | `Productos/Form@save()`, `Productos/Index@delete()` |
+| `nav.categorias` | 24h | Categorías activas ordenadas para menú de navegación | `Productos/Form@save()`, `Productos/Index@delete()`, `Categorias/Index@store/update/delete()` |
+
+---
+
 ## 8. Rutas
 
 ### Rutas públicas
 | URL | Controller | Vista | Descripción |
 |-----|-----------|-------|-------------|
-| `/` | `HomeController@index` | `home.blade.php` | Página principal (CMS dinámico) |
+| `/` | `HomeController@index` | `home.blade.php` | Página principal (CMS dinámico + productos destacados) |
 | `/nosotros` | `NosotrosController@index` | `acerca-de.blade.php` | Historia y misión (CMS dinámico) |
 | `/productos` | `ProductosPublicController@index` | `productos-ambiderm.blade.php` | Catálogo con filtro ?categoria= |
 | `/productos/{slug}` | `ProductosPublicController@show` | `producto-detalle.blade.php` | Detalle de producto |
