@@ -1,8 +1,8 @@
 # PROJECT_CONTEXT — Ambiderm 2026
 
-**Última actualización:** 2026-03-01
+**Última actualización:** 2026-03-02
 **Responsable:** Agent.Context
-**Estado del proyecto:** ADR-001 mergeado a main — panel admin con Usuarios/Roles/Permisos implementado
+**Estado del proyecto:** ADR-001, ADR-002 y ADR-003 mergeados a main — panel admin con Usuarios/Roles/Permisos, CMS Páginas Públicas y Catálogo de Productos implementados
 
 ---
 
@@ -50,7 +50,7 @@
 | Build | Vite | 7.x |
 | DB (producción) | MySQL | — |
 | Iconos (público) | Lucide Icons | CDN |
-| Iconos (admin) | Flux Icons | — |
+| Iconos (admin) | Flux Icons (Heroicons) | — |
 
 ---
 
@@ -60,63 +60,114 @@
 
 ```
 app/
-├── Actions/Fortify/          # Acciones de autenticación (CreateNewUser, ResetUserPassword)
-├── Concerns/                 # Traits de validación (PasswordValidationRules, ProfileValidationRules)
+├── Actions/Fortify/              # Acciones de autenticación
+├── Concerns/                     # Traits de validación
 ├── Http/Controllers/
-│   ├── Controller.php        # Base controller
+│   ├── Controller.php            # Base controller
+│   ├── HomeController.php        # Página inicio — usa ContenidoService
+│   ├── NosotrosController.php    # Página nosotros — usa ContenidoService
+│   ├── ProductosPublicController.php  # Catálogo público — Producto + Categoria
 │   └── Admin/
-│       ├── UsuariosController.php   # CRUD + UserPolicy + syncRoles()
-│       ├── RolesController.php      # CRUD + RolePolicy + syncPermissions()
-│       └── PermisosController.php   # Solo index (read-only)
+│       ├── UsuariosController.php     # CRUD usuarios
+│       ├── RolesController.php        # CRUD roles
+│       ├── PermisosController.php     # Read-only permisos
+│       ├── CategoriasController.php   # CRUD categorías (ADR-003)
+│       ├── ProductosController.php    # CRUD productos (ADR-003)
+│       ├── ColoresController.php      # CRUD colores (ADR-003)
+│       ├── TamanosController.php      # CRUD tamaños (ADR-003)
+│       └── PaginasController.php      # Index/Edit secciones CMS (ADR-002)
 ├── Livewire/
-│   ├── Actions/              # Logout
+│   ├── Actions/Logout.php
 │   └── Admin/
-│       ├── Usuarios/
-│       │   └── Index.php     # CRUD completo de usuarios con asignación de roles
+│       ├── Usuarios/Index.php         # CRUD usuarios con roles
 │       ├── Roles/
-│       │   ├── Index.php     # Listado + crear + eliminar roles
-│       │   └── Edit.php      # Editar rol + asignar permisos (checkboxes + syncPermissions)
-│       └── Permisos/
-│           └── Index.php     # Read-only, agrupado por módulo
-├── Models/                   # Modelos Eloquent
+│       │   ├── Index.php              # Listado + crear + eliminar roles
+│       │   └── Edit.php               # Editar rol + checkboxes permisos
+│       ├── Permisos/Index.php         # Read-only agrupado por módulo
+│       ├── Categorias/Index.php       # CRUD categorías
+│       ├── Productos/
+│       │   ├── Index.php              # Listado productos con filtros
+│       │   └── Form.php               # Crear/Editar producto
+│       ├── Colores/Index.php          # CRUD colores
+│       ├── Tamanos/Index.php          # CRUD tamaños
+│       └── Paginas/
+│           ├── Index.php              # Listado secciones agrupadas por página
+│           └── EditSeccion.php        # Editor JSON con form partials por sección
+├── Models/
+│   ├── User.php               # HasRoles (Spatie)
+│   ├── Categoria.php          # Modelo categorías de productos
+│   ├── Producto.php           # Modelo productos con relaciones
+│   ├── Color.php              # Catálogo colores
+│   ├── Tamano.php             # Catálogo tamaños
+│   └── SeccionContenido.php   # CMS — JSON contenido, scope pagina(), obtener()
 ├── Policies/
-│   ├── UserPolicy.php        # Delega a $user->can('usuarios.*')
-│   └── RolePolicy.php        # Delega a $user->can('roles.*') + guard super_admin
-└── Providers/                # AppServiceProvider (registra RolePolicy), FortifyServiceProvider
+│   ├── UserPolicy.php
+│   ├── RolePolicy.php
+│   ├── CategoriaPolicy.php
+│   ├── ProductoPolicy.php
+│   └── SeccionContenidoPolicy.php
+├── Services/
+│   └── ContenidoService.php   # Cache 24h, obtener(), obtenerPagina(), fallback por defecto
+└── Providers/
+    ├── AppServiceProvider.php
+    └── FortifyServiceProvider.php
 
-database/seeders/
-├── DatabaseSeeder.php                 # Llama RolesAndPermissionsSeeder + crea super_admin
-└── RolesAndPermissionsSeeder.php      # 3 roles, 14 permisos, idempotente (firstOrCreate)
+database/
+├── migrations/
+│   ├── ...create_users_table.php
+│   ├── ...create_permission_tables.php
+│   ├── ...create_categorias_table.php
+│   ├── ...create_colores_table.php
+│   ├── ...create_tamanos_table.php
+│   ├── ...create_productos_table.php
+│   ├── ...create_producto_color_table.php
+│   ├── ...create_producto_tamano_table.php
+│   └── ...create_secciones_contenido_table.php
+├── seeders/
+│   ├── DatabaseSeeder.php
+│   ├── RolesAndPermissionsSeeder.php    # 3 roles, 22 permisos, idempotente
+│   └── SeccionesContenidoSeeder.php     # 15 secciones CMS (home/nosotros/footer)
 
 resources/views/
 ├── layouts/
 │   ├── app/
-│   │   └── sidebar.blade.php # Sidebar con @can guards para módulos admin
-│   ├── app.blade.php         # Layout del panel admin (Flux sidebar)
-│   └── auth.blade.php        # Layout de autenticación
-├── components/
-│   └── layouts/
-│       └── public.blade.php  # Layout compartido para vistas públicas (nav, chatbot, lenis, JS)
-├── admin/
-│   ├── usuarios/
-│   │   └── index.blade.php   # Wrapper Livewire Usuarios
+│   │   ├── sidebar.blade.php  # Sidebar con @can guards (Panel, Administración, Catálogo, Contenido)
+│   │   └── header.blade.php
+│   ├── app.blade.php          # Layout panel admin (Flux sidebar)
+│   └── auth.blade.php         # Layout autenticación
+├── components/layouts/
+│   └── public.blade.php       # Layout compartido vistas públicas (nav, chatbot, lenis, JS)
+├── admin/                     # Wrappers Livewire (categorias, colores, paginas, permisos, productos, roles, tamanos, usuarios)
+├── livewire/admin/
+│   ├── categorias/index.blade.php
+│   ├── colores/index.blade.php
+│   ├── tamanos/index.blade.php
+│   ├── productos/
+│   │   ├── index.blade.php
+│   │   └── form.blade.php
+│   ├── paginas/
+│   │   ├── index.blade.php
+│   │   ├── edit-seccion.blade.php
+│   │   └── forms/             # 16 partials: home-hero, home-video-feature, home-coleccion,
+│   │       │                  #   home-soluciones-medicas, home-eco-friendly, home-youtube-video,
+│   │       │                  #   nosotros-hero, nosotros-historia, nosotros-mision, nosotros-vision,
+│   │       │                  #   nosotros-valores, footer-redes-sociales, footer-sucursales,
+│   │       │                  #   footer-contacto, footer-copyright, generic
+│   ├── permisos/index.blade.php
 │   ├── roles/
-│   │   ├── index.blade.php   # Wrapper Livewire Roles
-│   │   └── edit.blade.php    # Wrapper Livewire Roles/Edit
-│   └── permisos/
-│       └── index.blade.php   # Wrapper Livewire Permisos
-├── livewire/
-│   └── admin/                # Vistas Blade de los componentes Livewire admin
-├── pages/
-│   ├── auth/                 # Login, register, 2FA, verify-email, etc.
-│   └── settings/             # Perfil, password, appearance, two-factor
+│   │   ├── index.blade.php
+│   │   └── edit.blade.php
+│   └── usuarios/index.blade.php
 ├── partials/
-│   └── head.blade.php        # <head> para panel admin (Flux)
-├── home.blade.php            # Página pública: inicio
-├── acerca-de-ambiderm.blade.php  # Página pública: nosotros
-├── productos-ambiderm.blade.php  # Página pública: catálogo de guantes
-├── producto-detalle.blade.php    # Página pública: detalle de producto
-└── guantes-vynil.blade.php       # Página pública: categoría vinyl
+│   ├── footer.blade.php       # Footer compartido dinámico ($footer CMS)
+│   └── head.blade.php
+├── home.blade.php             # Página inicio — dinámico, $secciones CMS
+├── acerca-de.blade.php        # Página nosotros — dinámico, $secciones CMS
+├── productos-ambiderm.blade.php   # Catálogo público (ADR-003)
+├── producto-detalle.blade.php     # Detalle de producto (ADR-003)
+└── pages/
+    ├── auth/                  # Login, register, 2FA, verify-email, etc.
+    └── settings/              # Perfil, password, appearance, two-factor
 
 routes/
 ├── web.php       # Rutas públicas + rutas admin (/admin/* auth + can middleware)
@@ -128,10 +179,11 @@ routes/
 - **Livewire + Flux** para todas las vistas del panel admin
 - **Blade puro** para páginas públicas (sin Livewire donde no se necesite interactividad)
 - **Spatie Permission** para roles y permisos granulares
+- **ContenidoService** — servicio estático con cache 24h y fallback automático para CMS
 
 ---
 
-## 5. Estado actual (2026-03-01)
+## 5. Estado actual (2026-03-02)
 
 ### Completado
 | Feature | Descripción | Branch/Estado |
@@ -140,57 +192,114 @@ routes/
 | Autenticación | Login, registro, 2FA, recuperar password, verify email | ✅ main |
 | Settings de usuario | Perfil, password, appearance, two-factor setup | ✅ main |
 | Dashboard base | Vista placeholder (sin contenido real) | ✅ main (placeholder) |
-| Rutas públicas | 5 páginas públicas sirviendo Blade | ✅ main |
+| Rutas públicas | Páginas públicas con controllers y contenido dinámico CMS | ✅ main |
 | Migration permisos | Tablas de Spatie creadas en DB | ✅ main |
 | Brand tokens CSS | `@theme` en app.css con paleta completa de Ambiderm | ✅ main |
 | Layout público compartido | `components/layouts/public.blade.php` con nav, chatbot, lenis | ✅ main |
 | Migración CDN → Vite | Todas las vistas públicas usan pipeline Vite | ✅ main |
-| **ADR-001 — Roles y Permisos** | 3 roles, 14 permisos, seeder idempotente | ✅ **main (PR #1 mergeado)** |
+| **ADR-001 — Roles y Permisos** | 3 roles, 22 permisos, seeder idempotente | ✅ **main (PR #1)** |
 | **Panel admin: Usuarios** | CRUD Livewire + UserPolicy + syncRoles | ✅ **main** |
 | **Panel admin: Roles** | CRUD Livewire + RolePolicy + syncPermissions (checkboxes) | ✅ **main** |
 | **Panel admin: Permisos** | Listado read-only Livewire agrupado por módulo | ✅ **main** |
+| **ADR-002 — CMS Páginas Públicas** | 15 secciones editables, ContenidoService con cache y fallback | ✅ **main (PR #3)** |
+| **Panel admin: Páginas** | Index agrupado por página + EditSeccion con 16 form partials | ✅ **main** |
+| **Vistas públicas dinámicas** | home.blade.php, acerca-de.blade.php, footer.blade.php usan CMS | ✅ **main** |
+| **ADR-003 — Catálogo de Productos** | CRUD productos, categorías, colores, tamaños | ✅ **main (PR #2)** |
+| **Catálogo público** | ProductosPublicController con filtro por categoría | ✅ **main** |
 
 ### ADRs — Estado
 | ADR | Descripción | Estado |
 |-----|-------------|--------|
-| ADR-001 | Sistema de roles y permisos (Spatie) | ✅ Completo — mergeado a main |
-| ADR-003 | Alcance del panel admin (qué módulos tendrá) | ⏳ Pendiente |
-| ADR-004 | Gestión de productos (CRUD en admin) | ⏳ Pendiente |
-
-### Deuda técnica
-| Issue | Descripción | Severidad |
-|-------|-------------|-----------|
-| TD-002 | `User` model no tenía `HasRoles` de Spatie | ✅ Resuelto (2026-03-01) |
+| ADR-001 | Sistema de roles y permisos (Spatie) | ✅ Completo — PR #1 mergeado |
+| ADR-002 | CMS páginas públicas (contenido dinámico) | ✅ Completo — PR #3 mergeado |
+| ADR-003 | Catálogo de productos (CRUD admin + público) | ✅ Completo — PR #2 mergeado |
 
 ---
 
 ## 6. Módulos del panel admin
 
-### Implementados (ADR-001)
+### Implementados
 ```
-/admin/usuarios    — CRUD de usuarios internos + asignación de rol
-/admin/roles       — CRUD de roles + asignación de permisos via checkboxes
-/admin/permisos    — Listado read-only de permisos, agrupados por módulo
-```
-
-### Pendientes (requieren ADR aprobado)
-```
-Panel Admin — módulos futuros:
-├── Dashboard          — KPIs y resumen general (ADR-003)
-├── Productos          — CRUD de catálogo de productos (ADR-004)
-└── Configuración      — Settings del sistema (ADR futuro)
+/admin/usuarios          — CRUD de usuarios internos + asignación de rol (ADR-001)
+/admin/roles             — CRUD de roles + asignación de permisos via checkboxes (ADR-001)
+/admin/permisos          — Listado read-only agrupado por módulo (ADR-001)
+/admin/categorias        — CRUD categorías de productos (ADR-003)
+/admin/productos         — CRUD productos + crear/editar con form completo (ADR-003)
+/admin/tamanos           — CRUD tamaños (ADR-003)
+/admin/colores           — CRUD colores (ADR-003)
+/admin/paginas           — Listado secciones CMS + edición por sección (ADR-002)
 ```
 
-### ADR-001 — Reglas del sistema de permisos
-- Convención: `modulo.accion` (ej: `usuarios.crear`, `roles.editar`)
+### Sidebar (4 grupos)
+```
+Panel         → Dashboard
+Administración → Usuarios, Roles, Permisos
+Catálogo      → Productos, Categorías, Tamaños, Colores
+Contenido     → Páginas
+```
+
+### Sistema de permisos (22 permisos, 3 roles)
+- Convención: `modulo.accion` (ej: `usuarios.crear`, `paginas.editar`)
 - **Permisos son inmutables desde UI** — solo se crean/eliminan en `RolesAndPermissionsSeeder`
 - **Asignación de permisos a roles sí es editable** desde `/admin/roles/{id}/edit`
 - `super_admin` recibe todos los permisos automáticamente vía seeder
+- `admin` recibe todos menos eliminar roles
+- `editor` recibe: dashboard.ver, categorias.ver, productos.ver/editar, paginas.ver/editar
 - Las Policies verifican permisos Spatie, no roles directamente
 
 ---
 
-## 7. Diseño y UI
+## 7. CMS — Contenido dinámico (ADR-002)
+
+### Modelo `SeccionContenido`
+- Tabla: `secciones_contenido`
+- Columnas: `pagina`, `seccion` (unique pair), `titulo_admin`, `contenido` (JSON), `orden`, `activo`
+- 15 secciones iniciales: 6 home + 5 nosotros + 4 footer
+
+### ContenidoService
+- `obtener(pagina, seccion)`: JSON de una sección (cache 24h)
+- `obtenerPagina(pagina)`: Collection keyed por sección (cache 24h)
+- `invalidarCache(pagina, seccion?)`: invalidación manual (se llama al guardar desde admin)
+- **Fallback automático**: si una sección falta en DB, retorna mock `SeccionContenido` con contenido vacío
+
+### Flujo de datos: DB → Cache → Controller → Vista
+```
+SeccionContenido (DB) → ContenidoService (cache 24h) → HomeController/NosotrosController
+    → $secciones['hero']->contenido → {{ $hero['titulo'] }} en Blade
+    → $footer['redes_sociales']->contenido → {{ $redes['logo'] }} en footer partial
+```
+
+---
+
+## 8. Rutas
+
+### Rutas públicas
+| URL | Controller | Vista | Descripción |
+|-----|-----------|-------|-------------|
+| `/` | `HomeController@index` | `home.blade.php` | Página principal (CMS dinámico) |
+| `/nosotros` | `NosotrosController@index` | `acerca-de.blade.php` | Historia y misión (CMS dinámico) |
+| `/productos` | `ProductosPublicController@index` | `productos-ambiderm.blade.php` | Catálogo con filtro ?categoria= |
+| `/productos/{slug}` | `ProductosPublicController@show` | `producto-detalle.blade.php` | Detalle de producto |
+| `/producto-detalle` | redirect 301 → `/productos` | — | Legacy redirect |
+| `/guantes-vynil` | redirect 301 → `/productos` | — | Legacy redirect |
+| `/dashboard` | View | `dashboard.blade.php` | Panel admin (auth + verified) |
+
+### Rutas admin (auth + verified + can middleware)
+| URL | Controller | Permiso |
+|-----|-----------|---------|
+| `/admin/usuarios` | UsuariosController | (auth) |
+| `/admin/roles` | RolesController | (auth) |
+| `/admin/permisos` | PermisosController | `permisos.ver` |
+| `/admin/categorias` | CategoriasController | `categorias.ver` |
+| `/admin/productos` | ProductosController | `productos.ver` |
+| `/admin/tamanos` | TamanosController | `productos.crear` |
+| `/admin/colores` | ColoresController | `productos.crear` |
+| `/admin/paginas` | PaginasController | `paginas.ver` |
+| `/admin/paginas/{pagina}/{seccion}/editar` | PaginasController | `paginas.editar` |
+
+---
+
+## 9. Diseño y UI
 
 ### Estética del sitio público
 - Inspiración: "Apple-inspired" — limpio, premium, minimalista
@@ -207,24 +316,12 @@ Panel Admin — módulos futuros:
 
 ### Estética del panel admin
 - Flux UI con tema dark/light automático
+- Heroicons (via Flux) para iconografía admin
 - Consistente con los defaults de Livewire Flux
 
 ---
 
-## 8. Rutas públicas
-
-| URL | Vista | Descripción |
-|-----|-------|-------------|
-| `/` | `home.blade.php` | Página principal |
-| `/nosotros` | `acerca-de-ambiderm.blade.php` | Historia y misión |
-| `/productos` | `productos-ambiderm.blade.php` | Catálogo de guantes |
-| `/producto-detalle` | `producto-detalle.blade.php` | Detalle de producto |
-| `/guantes-vynil` | `guantes-vynil.blade.php` | Categoría: guantes de vinyl |
-| `/dashboard` | `dashboard.blade.php` | Panel admin (auth + verified) |
-
----
-
-## 9. Convenciones clave
+## 10. Convenciones clave
 
 - **Namespaces**: PSR-4, siempre mayúscula — `App\Models\User`, `App\Http\Controllers\...`
 - **Commits**: En español — `feat(productos): se implementa CRUD (ADR-004)`

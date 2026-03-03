@@ -13,6 +13,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Spatie\Permission\Models\Role;
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configurePolicies();
+        $this->configureViewComposers();
     }
 
     /**
@@ -67,5 +69,19 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Categoria::class, CategoriaPolicy::class);
         Gate::policy(Producto::class, ProductoPolicy::class);
         Gate::policy(SeccionContenido::class, SeccionContenidoPolicy::class);
+    }
+
+    /**
+     * Share dynamic navigation data with public layout views.
+     */
+    protected function configureViewComposers(): void
+    {
+        View::composer('components.layouts.public', function ($view) {
+            $view->with('categoriasNav', cache()->remember('nav.categorias', now()->addHours(24), function () {
+                return Categoria::where('activo', true)
+                    ->orderBy('orden')
+                    ->get(['nombre', 'slug']);
+            }));
+        });
     }
 }

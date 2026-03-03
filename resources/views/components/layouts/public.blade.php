@@ -53,10 +53,9 @@
                         PRODUCTOS <i data-lucide="chevron-down" class="w-3 h-3 transition-transform group-hover:rotate-180"></i>
                     </button>
                     <div class="absolute top-[48px] left-1/2 -translate-x-1/2 w-48 bg-white/90 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-2xl py-4 flex flex-col gap-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform group-hover:translate-y-0 -translate-y-2">
-                        <a href="{{ route('productos') }}" class="px-6 py-2 hover:bg-gray-50 hover:text-brand-blue transition-colors font-bold">GUANTES</a>
-                        <a href="https://ambiderm.com.mx/categoria/dental" class="px-6 py-2 hover:bg-gray-50 hover:text-brand-blue transition-colors">DENTAL</a>
-                        <a href="https://ambiderm.com.mx/categoria/insumos-medicos" class="px-6 py-2 hover:bg-gray-50 hover:text-brand-blue transition-colors">INSUMOS MÉDICOS</a>
-                        <a href="https://ambiderm.com.mx/categoria/ropa-medica" class="px-6 py-2 hover:bg-gray-50 hover:text-brand-blue transition-colors">ROPA MÉDICA</a>
+                        @foreach ($categoriasNav as $cat)
+                            <a href="{{ route('productos', ['categoria' => $cat->slug]) }}" class="px-6 py-2 hover:bg-gray-50 hover:text-brand-blue transition-colors {{ request('categoria') === $cat->slug ? 'font-bold text-brand-blue' : '' }}">{{ mb_strtoupper($cat->nombre) }}</a>
+                        @endforeach
                     </div>
                 </div>
 
@@ -85,10 +84,9 @@
             <a href="{{ route('nosotros') }}" class="text-gray-900">Nosotros</a>
             <div class="flex flex-col gap-4">
                 <p class="text-[12px] font-bold text-gray-400 uppercase tracking-widest mt-4">Categorías</p>
-                <a href="{{ route('productos') }}" class="text-brand-blue font-bold pl-4">Guantes</a>
-                <a href="https://ambiderm.com.mx/categoria/dental" class="text-gray-900 pl-4">Dental</a>
-                <a href="https://ambiderm.com.mx/categoria/insumos-medicos" class="text-gray-900 pl-4">Insumos</a>
-                <a href="https://ambiderm.com.mx/categoria/ropa-medica" class="text-gray-900 pl-4">Ropa</a>
+                @foreach ($categoriasNav as $cat)
+                    <a href="{{ route('productos', ['categoria' => $cat->slug]) }}" class="{{ request('categoria') === $cat->slug ? 'text-brand-blue font-bold' : 'text-gray-900' }} pl-4">{{ $cat->nombre }}</a>
+                @endforeach
             </div>
             <div class="h-[1px] bg-gray-200 w-full my-4"></div>
             <a href="https://shop.ambiderm.com.mx/" class="text-gray-900">Tienda en Línea</a>

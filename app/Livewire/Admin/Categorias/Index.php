@@ -69,6 +69,8 @@ class Index extends Component
 
         Categoria::create($data);
 
+        cache()->forget('nav.categorias');
+
         $this->showCreateModal = false;
         $this->resetForm();
         session()->flash('success', 'Categoría creada exitosamente.');
@@ -112,6 +114,8 @@ class Index extends Component
 
         $categoria->update($data);
 
+        cache()->forget('nav.categorias');
+
         $this->showEditModal = false;
         $this->editingCategoriaId = null;
         $this->resetForm();
@@ -139,6 +143,9 @@ class Index extends Component
         }
 
         $categoria->delete();
+
+        cache()->forget('nav.categorias');
+
         $this->showDeleteModal = false;
         $this->deletingCategoriaId = null;
         session()->flash('success', 'Categoría eliminada.');

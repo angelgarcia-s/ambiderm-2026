@@ -217,6 +217,10 @@ class Form extends Component
         }
         $producto->colores()->sync($coloresSync);
 
+        // Invalidar caches públicos que dependen de productos
+        cache()->forget('home.productos_destacados');
+        cache()->forget('nav.categorias');
+
         $action = $isUpdate ? 'actualizado' : 'creado';
         session()->flash('success', "Producto {$action} exitosamente.");
 

@@ -88,179 +88,51 @@
       <div id="product-shelf"
         class="flex overflow-x-auto gap-4 md:gap-8 pb-12 -mx-6 px-6 md:mx-0 md:px-0 scrollbar-hide snap-x md:snap-none snap-proximity">
 
-        <!-- Product 1 -->
-        <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-          onclick="openDetail('esteril', 'Estéril', 'Guante de látex quirúrgico esterilizado, diseñado para la máxima sensibilidad táctil y protección en quirófano. Su diseño ergonómico reduce la fatiga durante procedimientos prolongados.', 'https://ambiderm.com.mx/storage/productos/7OyCwjS7LYzZDXCWYYdEpHhnmjMjuigXOGnGIGmE.png')">
-          <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
-            <div class="z-10 text-left">
-              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Cirugía</p>
-              <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">Estéril</h4>
-              <div class="flex gap-2 mt-3">
-                <div class="w-4 h-4 rounded-full bg-gray-100 ring-1 ring-gray-200"></div>
+        @forelse ($productosDestacados as $producto)
+          <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
+            onclick="openDetail('{{ $producto->slug }}', '{{ e($producto->nombre) }}', '{{ e($producto->descripcion) }}', '{{ $producto->imagen_url }}', '{{ e($producto->categorias->first()?->nombre ?? $producto->material) }}')">
+            <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
+              <div class="z-10 text-left">
+                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">{{ $producto->categorias->first()?->nombre ?? $producto->material }}</p>
+                <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">{{ $producto->nombre }}</h4>
+                @if ($producto->colores->isNotEmpty())
+                  <div class="flex gap-2 mt-3">
+                    @foreach ($producto->colores->take(4) as $color)
+                      @if ($color->hex)
+                        <div class="w-4 h-4 rounded-full ring-1 ring-gray-200" style="background-color: {{ $color->hex }}"></div>
+                      @elseif ($color->icono)
+                        <img src="{{ Storage::url($color->icono) }}" alt="{{ $color->nombre }}" class="w-4 h-4 rounded-full ring-1 ring-gray-200 object-cover">
+                      @else
+                        <div class="w-4 h-4 rounded-full bg-gray-100 ring-1 ring-gray-200"></div>
+                      @endif
+                    @endforeach
+                  </div>
+                @endif
               </div>
-            </div>
-            <div class="flex-1 w-full flex items-center justify-center relative">
-              <img src="https://ambiderm.com.mx/storage/productos/7OyCwjS7LYzZDXCWYYdEpHhnmjMjuigXOGnGIGmE.png" alt="Estéril"
-                class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
-            </div>
-            <div class="w-full h-12 flex items-center justify-center">
-              <div class="flex md:hidden w-full justify-between items-center">
-                <span class="text-brand-blue font-bold text-sm">Comprar</span>
-                <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
+              <div class="flex-1 w-full flex items-center justify-center relative">
+                @if ($producto->imagen_url)
+                  <img src="{{ $producto->imagen_url }}" alt="{{ $producto->nombre }}"
+                    class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
+                @endif
+              </div>
+              <div class="w-full h-12 flex items-center justify-center">
+                <div class="flex md:hidden w-full justify-between items-center">
+                  <span class="text-brand-blue font-bold text-sm">Ver detalles</span>
+                  <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
+                    <i data-lucide="chevron-right" class="w-5 h-5"></i>
+                  </div>
                 </div>
-              </div>
-              <div class="hidden md:flex w-full justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
+                <div class="hidden md:flex w-full justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                  <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <!-- Product 2 -->
-        <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-          onclick="openDetail('plus-negro', 'Plus Negro', 'Elegante y resistente, el Plus Negro es el favorito de los estudios de tatuaje y clínicas de alta gama. Máxima visibilidad y agarre superior.', 'https://ambiderm.com.mx/storage/productos/0yAxWIiIHSkm2v7G2Sad9cgRmihjI7Y3nWMha3CP.png')">
-          <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
-            <div class="z-10 text-left">
-              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Estilo</p>
-              <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">Plus Negro</h4>
-              <div class="flex gap-2 mt-3">
-                <div class="w-4 h-4 rounded-full bg-black ring-1 ring-gray-200 shadow-inner"></div>
-              </div>
-            </div>
-            <div class="flex-1 w-full flex items-center justify-center relative">
-              <img src="https://ambiderm.com.mx/storage/productos/0yAxWIiIHSkm2v7G2Sad9cgRmihjI7Y3nWMha3CP.png" alt="Plus Negro"
-                class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
-            </div>
-            <div class="w-full h-12 flex items-center justify-center">
-              <div class="flex md:hidden w-full justify-between items-center">
-                <span class="text-brand-blue font-bold text-sm">Comprar</span>
-                <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </div>
-              </div>
-              <div class="hidden md:flex w-full justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
-              </div>
-            </div>
+        @empty
+          <div class="flex-none w-full text-center py-20 text-gray-400">
+            <p class="text-lg">Próximamente productos destacados.</p>
           </div>
-        </div>
-
-        <!-- Product 3 -->
-        <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-          onclick="openDetail('confort', 'Confort', 'Protección clásica con la suavidad del látex natural. Ideal para uso clínico diario donde la comodidad es tan importante como la seguridad.', 'https://ambiderm.com.mx/storage/productos/2Nen9Dz9AypEFaCapHIwHMe4eBaV6uMlgXLLFsWt.png')">
-          <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
-            <div class="z-10 text-left">
-              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Uso Diario</p>
-              <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">Confort</h4>
-              <div class="flex gap-2 mt-3">
-                <div class="w-4 h-4 rounded-full bg-yellow-50 ring-1 ring-gray-200"></div>
-              </div>
-            </div>
-            <div class="flex-1 w-full flex items-center justify-center relative">
-              <img src="https://ambiderm.com.mx/storage/productos/2Nen9Dz9AypEFaCapHIwHMe4eBaV6uMlgXLLFsWt.png" alt="Confort"
-                class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
-            </div>
-            <div class="w-full h-12 flex items-center justify-center">
-              <div class="flex md:hidden w-full justify-between items-center">
-                <span class="text-brand-blue font-bold text-sm">Comprar</span>
-                <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </div>
-              </div>
-              <div class="hidden md:flex w-full justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 4 -->
-        <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-          onclick="openDetail('nitrilo', 'Nitrilo Azul', 'Libre de látex y altamente resistente. El guante de nitrilo Ambiderm ofrece la mejor barrera contra agentes químicos y punciones.', 'https://ambiderm.com.mx/storage/productos/BDOCYI3GixLQoC1nmI7oFe6ZJ2F8vPpvMgSA8E8i.png')">
-          <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
-            <div class="z-10 text-left">
-              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Resistencia</p>
-              <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">Nitrilo Azul</h4>
-              <div class="flex gap-2 mt-3">
-                <div class="w-4 h-4 rounded-full bg-blue-400 ring-1 ring-gray-200 shadow-inner"></div>
-              </div>
-            </div>
-            <div class="flex-1 w-full flex items-center justify-center relative">
-              <img src="https://ambiderm.com.mx/storage/productos/BDOCYI3GixLQoC1nmI7oFe6ZJ2F8vPpvMgSA8E8i.png" alt="Nitrilo Azul"
-                class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
-            </div>
-            <div class="w-full h-12 flex items-center justify-center">
-              <div class="flex md:hidden w-full justify-between items-center">
-                <span class="text-brand-blue font-bold text-sm">Comprar</span>
-                <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </div>
-              </div>
-              <div class="hidden md:flex w-full justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 5 -->
-        <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-          onclick="openDetail('vinyl', 'Vinyl LP', 'Guantes de vinilo de alta calidad, ideales para el manejo de alimentos y tareas de limpieza ligera. Libres de látex y polvos.', 'https://ambiderm.com.mx/storage/productos/rXujaebKU43gVFnzmjwJ5bLi1h0KRmWhnGYgA801.png')">
-          <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
-            <div class="z-10 text-left">
-              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Protección</p>
-              <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">Vinyl LP</h4>
-              <div class="flex gap-2 mt-3">
-                <div class="w-4 h-4 rounded-full bg-gray-50 ring-1 ring-gray-200 shadow-inner"></div>
-              </div>
-            </div>
-            <div class="flex-1 w-full flex items-center justify-center relative">
-              <img src="https://ambiderm.com.mx/storage/productos/rXujaebKU43gVFnzmjwJ5bLi1h0KRmWhnGYgA801.png" alt="Vinyl LP"
-                class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
-            </div>
-            <div class="w-full h-12 flex items-center justify-center">
-              <div class="flex md:hidden w-full justify-between items-center">
-                <span class="text-brand-blue font-bold text-sm">Comprar</span>
-                <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </div>
-              </div>
-              <div class="hidden md:flex w-full justify-center opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Product 6 -->
-        <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-          onclick="openDetail('kids', 'Kid Gloves', 'Especialmente diseñados para manos pequeñas. Brindan la misma protección clínica con un ajuste perfecto para los más jóvenes profesionales.', 'https://ambiderm.com.mx/storage/productos/qXdk8YkEfNw7smTDqlW1otPlR3ZXKZ50mnwJpLfz.png')">
-          <div class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
-            <div class="z-10 text-left">
-              <p class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] mb-1">Infantil</p>
-              <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">Kid Gloves</h4>
-              <div class="flex gap-2 mt-3">
-                <div class="w-4 h-4 rounded-full bg-green-100 ring-1 ring-gray-200"></div>
-              </div>
-            </div>
-            <div class="flex-1 w-full flex items-center justify-center relative">
-              <img src="https://ambiderm.com.mx/storage/productos/qXdk8YkEfNw7smTDqlW1otPlR3ZXKZ50mnwJpLfz.png" alt="Kid Gloves"
-                class="w-full h-auto max-h-[160px] md:max-h-[240px] object-contain mix-blend-multiply transition-transform duration-700 md:group-hover:scale-110">
-            </div>
-            <div class="w-full h-12 flex items-center justify-center">
-              <div class="flex md:hidden w-full justify-between items-center">
-                <span class="text-brand-blue font-bold text-sm">Comprar</span>
-                <div class="w-10 h-10 rounded-full bg-brand-blue flex items-center justify-center text-white">
-                  <i data-lucide="chevron-right" class="w-5 h-5"></i>
-                </div>
-              </div>
-              <div class="hidden md:flex opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all duration-500 w-full justify-center">
-                <div class="bg-blue-600 text-white px-10 py-3 rounded-full text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-500/20">Ver detalles</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        @endforelse
 
         <!-- Spacer para fin de scroll -->
         <div class="flex-none w-[100px] md:w-[200px]"></div>
@@ -269,7 +141,7 @@
   </section>
 
   @php $soluciones = $secciones['soluciones_medicas']->contenido; @endphp
-  <!-- --- SOLUCIONES MÉDICAS (3 COLUMNS) --- -->
+  <!-- --- SOLUCIONES MÉDICAS (4 COLUMNS) --- -->
   <section class="py-32 bg-white px-6">
     <div class="max-w-[1400px] mx-auto mb-16 px-4">
       <div class="reveal reveal-fade-in">
@@ -277,7 +149,7 @@
         <p class="text-gray-500 mt-2 text-lg">{{ $soluciones['subtitulo'] }}</p>
       </div>
     </div>
-    <div class="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div class="max-w-[1400px] mx-auto grid grid-cols-2 md:grid-cols-4 gap-6">
       @foreach ($soluciones['items'] as $i => $item)
         <a href="{{ $item['url'] }}" class="aspect-square group relative overflow-hidden rounded-[40px] bg-brand-surface reveal reveal-fade-in" @if ($i > 0) style="transition-delay: {{ $i * 100 }}ms;" @endif>
           <img src="{{ $item['imagen'] }}" alt="{{ $item['titulo'] }}" class="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110">
@@ -411,13 +283,14 @@
       });
 
       // --- PRODUCT DETAIL MODAL ---
-      function openDetail(id, title, desc, img) {
+      function openDetail(id, title, desc, img, tag) {
         const modal = document.getElementById('product-detail');
         const inner = modal.querySelector('div:nth-child(2)');
 
         document.getElementById('modal-title').innerText = title;
         document.getElementById('modal-desc').innerText = desc;
         document.getElementById('modal-img').src = img;
+        if (tag) document.getElementById('modal-tag').innerText = tag;
 
         modal.classList.remove('invisible', 'opacity-0');
         inner.classList.remove('scale-95');

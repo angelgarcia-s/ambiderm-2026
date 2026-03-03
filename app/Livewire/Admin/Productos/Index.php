@@ -45,6 +45,10 @@ class Index extends Component
         $producto->colores()->detach();
         $producto->delete();
 
+        // Invalidar caches públicos que dependen de productos
+        cache()->forget('home.productos_destacados');
+        cache()->forget('nav.categorias');
+
         $this->showDeleteModal = false;
         $this->deletingProductoId = null;
         session()->flash('success', 'Producto eliminado.');
