@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use Database\Seeders\SeccionesContenidoSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -11,6 +12,8 @@ class ExampleTest extends TestCase
 
     public function test_returns_a_successful_response(): void
     {
+        $this->seed(SeccionesContenidoSeeder::class);
+
         $response = $this->get(route('home'));
 
         $response->assertOk();
