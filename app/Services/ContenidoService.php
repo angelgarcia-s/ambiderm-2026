@@ -58,18 +58,25 @@ class ContenidoService
         $cacheKey = "contenido.{$pagina}";
 
         return cache()->remember($cacheKey, now()->addHours(24), function () use ($pagina) {
+            // Solo secciones activas (las que se renderizan en público)
             $secciones = SeccionContenido::pagina($pagina)->get()->keyBy('seccion');
 
-            // Rellenar secciones faltantes con mocks fallback
+            // Secciones que existen en DB (activas o inactivas) — para no inyectar
+            // fallback sobre secciones que existen pero están desactivadas
+            $existentesEnDB = SeccionContenido::where('pagina', $pagina)
+                ->pluck('seccion')
+                ->toArray();
+
+            // Fallback solo para secciones que nunca fueron creadas en DB
             foreach (self::$defaults[$pagina] ?? [] as $seccion => $contenido) {
-                if (! $secciones->has($seccion)) {
+                if (! in_array($seccion, $existentesEnDB)) {
                     $mock = new SeccionContenido([
-                        'pagina' => $pagina,
-                        'seccion' => $seccion,
+                        'pagina'       => $pagina,
+                        'seccion'      => $seccion,
                         'titulo_admin' => ucfirst(str_replace('_', ' ', $seccion)),
-                        'contenido' => $contenido,
-                        'orden' => 99,
-                        'activo' => true,
+                        'contenido'    => $contenido,
+                        'orden'        => 99,
+                        'activo'       => true,
                     ]);
                     $secciones->put($seccion, $mock);
                 }

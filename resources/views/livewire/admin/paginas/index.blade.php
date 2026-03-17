@@ -37,11 +37,27 @@
                                     <flux:badge size="sm" color="zinc" inset="top bottom">{{ $seccion->seccion }}</flux:badge>
                                 </flux:table.cell>
                                 <flux:table.cell>
-                                    @if ($seccion->activo)
-                                        <flux:badge size="sm" color="green" inset="top bottom">Activo</flux:badge>
+                                    @can('paginas.editar')
+                                        <flux:button
+                                            variant="ghost"
+                                            size="xs"
+                                            wire:click="toggleActivo({{ $seccion->id }})"
+                                            wire:loading.attr="disabled"
+                                            wire:target="toggleActivo({{ $seccion->id }})"
+                                        >
+                                            @if ($seccion->activo)
+                                                <flux:badge size="sm" color="green" inset="top bottom">Activo</flux:badge>
+                                            @else
+                                                <flux:badge size="sm" color="zinc" inset="top bottom">Inactivo</flux:badge>
+                                            @endif
+                                        </flux:button>
                                     @else
-                                        <flux:badge size="sm" color="zinc" inset="top bottom">Inactivo</flux:badge>
-                                    @endif
+                                        @if ($seccion->activo)
+                                            <flux:badge size="sm" color="green" inset="top bottom">Activo</flux:badge>
+                                        @else
+                                            <flux:badge size="sm" color="zinc" inset="top bottom">Inactivo</flux:badge>
+                                        @endif
+                                    @endcan
                                 </flux:table.cell>
                                 <flux:table.cell class="text-zinc-500 text-sm">
                                     {{ $seccion->updated_at->diffForHumans() }}

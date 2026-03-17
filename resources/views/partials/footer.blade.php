@@ -1,14 +1,15 @@
 {{-- Footer compartido: Redes sociales, Sucursales, Contacto, Copyright --}}
 @php
-    $redes = $footer['redes_sociales']->contenido;
-    $sucursales = $footer['sucursales']->contenido;
-    $contacto = $footer['contacto']->contenido;
-    $copyright = $footer['copyright']->contenido;
+    $redes      = $footer->get('redes_sociales')?->contenido ?? [];
+    $sucursales = $footer->get('sucursales')?->contenido ?? [];
+    $contacto   = $footer->get('contacto')?->contenido ?? [];
+    $copyright  = $footer->get('copyright')?->contenido ?? [];
 @endphp
 
 <footer class="bg-white pt-32 overflow-hidden" id="contacto">
 
   <!-- Redes Sociales & Logo -->
+  @if ($footer->has('redes_sociales'))
   <div class="max-w-[1200px] mx-auto px-6 mb-32">
     <div class="flex flex-col md:flex-row justify-between items-center gap-12">
       <div class="reveal reveal-fade-in">
@@ -31,8 +32,10 @@
       </div>
     </div>
   </div>
+  @endif
 
   <!-- Mapas & Sucursales -->
+  @if ($footer->has('sucursales'))
   <div class="bg-[#fbfbfd] py-32 border-t border-gray-100">
     <div class="max-w-[1200px] mx-auto px-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
@@ -50,12 +53,14 @@
               </div>
             @endforeach
           </div>
+          @if (!empty($contacto['email']))
           <div class="mt-16 reveal reveal-fade-in">
             <a href="mailto:{{ $contacto['email'] }}" class="inline-flex items-center gap-4 text-brand-ink font-bold text-2xl hover:text-brand-blue transition-all">
               {{ $contacto['email'] }}
               <i data-lucide="arrow-up-right" class="w-6 h-6"></i>
             </a>
           </div>
+          @endif
         </div>
 
         <!-- Mapa Interactivo -->
@@ -73,8 +78,10 @@
       </div>
     </div>
   </div>
+  @endif
 
   <!-- Formulario de Contacto & Distribuidor -->
+  @if ($footer->has('contacto'))
   <div class="bg-white py-32">
     <div class="max-w-[1200px] mx-auto px-6">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
@@ -120,8 +127,10 @@
       </div>
     </div>
   </div>
+  @endif
 
   <!-- Copyright Bar -->
+  @if ($footer->has('copyright'))
   <div class="py-12 px-6 border-t border-gray-100 bg-[#fbfbfd]">
     <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
       <div class="text-center md:text-left">
@@ -135,4 +144,5 @@
       </div>
     </div>
   </div>
+  @endif
 </footer>

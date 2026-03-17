@@ -1,14 +1,15 @@
 <x-layouts.public title="Acerca de Ambiderm - Más de 30 años protegíendote">
 
     @php
-        $hero = $secciones['hero']->contenido;
-        $historia = $secciones['historia']->contenido;
-        $mision = $secciones['mision']->contenido;
-        $vision = $secciones['vision']->contenido;
-        $valores = $secciones['valores']->contenido;
+        $hero     = $secciones->get('hero')?->contenido ?? [];
+        $historia = $secciones->get('historia')?->contenido ?? [];
+        $mision   = $secciones->get('mision')?->contenido ?? [];
+        $vision   = $secciones->get('vision')?->contenido ?? [];
+        $valores  = $secciones->get('valores')?->contenido ?? [];
     @endphp
 
     <!-- --- HERO SECTION --- -->
+    @if ($secciones->has('hero'))
     <header class="relative pt-40 pb-20 md:pt-64 md:pb-32 px-6 text-center bg-brand-surface overflow-hidden">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-blue-100 rounded-full blur-[120px] opacity-60 -z-10 pointer-events-none"></div>
 
@@ -27,8 +28,10 @@
             </div>
         </div>
     </header>
+    @endif
 
     <!-- --- HISTORIA SECTION --- -->
+    @if ($secciones->has('historia'))
     <section class="py-24 md:py-32 px-6 bg-white">
         <div class="max-w-[1200px] mx-auto">
             <div class="flex flex-col md:flex-row items-center gap-16 lg:gap-24">
@@ -55,14 +58,15 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- --- MISION & VISION (Cards) --- -->
+    @if ($secciones->has('mision') || $secciones->has('vision'))
     <section class="py-24 bg-brand-surface px-6">
         <div class="max-w-[1200px] mx-auto">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
 
-                <!-- Misión -->
-                <div class="bg-white p-12 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] reveal reveal-fade-in hover:-translate-y-2 transition-transform duration-500">
+                <!-- Misión -->                @if ($secciones->has('mision'))                <div class="bg-white p-12 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] reveal reveal-fade-in hover:-translate-y-2 transition-transform duration-500">
                     <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-8 text-blue-600">
                         <i data-lucide="{{ $mision['icono'] }}" class="w-8 h-8"></i>
                     </div>
@@ -71,8 +75,10 @@
                         {!! $mision['texto'] !!}
                     </p>
                 </div>
+                @endif
 
                 <!-- Visión -->
+                @if ($secciones->has('vision'))
                 <div class="bg-white p-12 rounded-[40px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] reveal reveal-fade-in hover:-translate-y-2 transition-transform duration-500"
                     style="transition-delay: 100ms;">
                     <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-8 text-blue-600">
@@ -83,12 +89,15 @@
                         {!! $vision['texto'] !!}
                     </p>
                 </div>
+                @endif
 
             </div>
         </div>
     </section>
+    @endif
 
     <!-- --- VALORES & ECO (Green Section) --- -->
+    @if ($secciones->has('valores'))
     <section class="py-32 bg-green-50/30 px-6 overflow-hidden">
         <div class="max-w-[1200px] mx-auto">
             <div class="text-center max-w-3xl mx-auto mb-20 reveal reveal-fade-in">
@@ -110,6 +119,7 @@
             </div>
         </div>
     </section>
+    @endif
 
     <!-- --- LOCATIONS & CONTACT FOOTER --- -->
     @include('partials.footer')

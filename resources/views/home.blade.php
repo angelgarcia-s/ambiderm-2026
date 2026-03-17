@@ -1,5 +1,6 @@
 <x-layouts.public title="Ambiderm - Innovación en Protección" :nav-transparent="true">
 
+@if ($secciones->has('hero'))
     @php $hero = $secciones['hero']->contenido; @endphp
     <!-- --- HERO SECTION --- -->
     <section class="relative pt-40 pb-12 md:pt-52 md:pb-20 px-6 text-center bg-brand-surface overflow-hidden">
@@ -25,7 +26,9 @@
             </div>
         </div>
     </section>
+@endif
 
+@if ($secciones->has('video_feature'))
     @php $videoFeature = $secciones['video_feature']->contenido; @endphp
     <!-- --- VIDEO FEATURE CARD (2 COLUMNS) --- -->
     <section id="video-feature" class="py-12 md:py-24 px-6 bg-brand-surface">
@@ -63,7 +66,9 @@
             </div>
         </div>
     </section>
+@endif
 
+@if ($secciones->has('coleccion'))
     @php $coleccion = $secciones['coleccion']->contenido; @endphp
     <!-- --- HORIZONTAL SCROLL COLLECTION --- -->
     <section class="bg-brand-surface pt-32 pb-16 border-t border-gray-100 overflow-hidden" id="productos">
@@ -154,7 +159,9 @@
             </div>
         </div>
     </section>
+@endif
 
+@if ($secciones->has('soluciones_medicas'))
     @php $soluciones = $secciones['soluciones_medicas']->contenido; @endphp
     <!-- --- SOLUCIONES MÉDICAS (4 COLUMNS) --- -->
     <section class="py-32 bg-white px-6">
@@ -186,7 +193,9 @@
             @endforeach
         </div>
     </section>
+@endif
 
+@if ($secciones->has('eco_friendly'))
     @php $eco = $secciones['eco_friendly']->contenido; @endphp
     <!-- --- ECO-FRIENDLY SECTION --- -->
     <section class="py-32 bg-green-50/30 px-6 overflow-hidden">
@@ -220,7 +229,9 @@
             </div>
         </div>
     </section>
+@endif
 
+@if ($secciones->has('youtube_video'))
     @php $ytVideo = $secciones['youtube_video']->contenido; @endphp
     <!-- --- YOUTUBE CINEMATIC SECTION --- -->
     <section class="w-full h-screen bg-black overflow-hidden relative">
@@ -231,6 +242,7 @@
             </iframe>
         </div>
     </section>
+@endif
 
     <!-- --- LOCATIONS & CONTACT FOOTER --- -->
     @include('partials.footer')
