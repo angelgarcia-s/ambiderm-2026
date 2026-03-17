@@ -23,5 +23,5 @@ yarn-error.log
 /.zed
 /docs/.agents
 /_backup_static
-DS_Store
+.DS_Store
     

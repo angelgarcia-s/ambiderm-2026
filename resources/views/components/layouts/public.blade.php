@@ -39,7 +39,7 @@
 
             <!-- Logo -->
             <a href="{{ route('home') }}" class="z-50 opacity-90 hover:opacity-100 transition-opacity">
-                <img src="https://ambiderm.com.mx/img/new/logo-ambiderm-azul.svg" alt="Ambiderm Logo" class="h-8 w-auto">
+                <img src="{{ asset('images/logo-blue.svg') }}" alt="Ambiderm Logo" class="h-8 w-auto">
             </a>
 
             <!-- Desktop Menu -->

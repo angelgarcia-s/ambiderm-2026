@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@ambiderm.com.mx'],
             [
                 'name' => 'Admin Ambiderm',
-                'password' => bcrypt('12345678'),
+                'password' => bcrypt(env('SUPERADMIN_PASSWORD', 'changeme')),
             ]
         );
         $admin->syncRoles(['super_admin']);
