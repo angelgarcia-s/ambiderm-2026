@@ -104,7 +104,7 @@
     </flux:table>
 
     {{-- Modal: Crear/Editar color --}}
-    <flux:modal wire:model="showModal" class="max-w-md w-full">
+    <flux:modal wire:model="showModal" class="max-w-md w-full" :dismissible="false">
         <form wire:submit="save" class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ $isEditing ? 'Editar color' : 'Nuevo color' }}</flux:heading>
@@ -155,7 +155,7 @@
     </flux:modal>
 
     {{-- Modal: Confirmar eliminación --}}
-    <flux:modal wire:model="showDeleteModal" class="max-w-md w-full">
+    <flux:modal wire:model="showDeleteModal" class="max-w-md w-full" :dismissible="false">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">¿Eliminar color?</flux:heading>

@@ -95,7 +95,7 @@ class Form extends Component
 
     public function updatedNombre(string $value): void
     {
-        if (! $this->productoId || $this->slug === Str::slug(old('nombre', ''))) {
+        if (! $this->productoId || $this->slug === Str::slug($this->nombre)) {
             $this->slug = Str::slug($value);
         }
     }

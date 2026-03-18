@@ -80,7 +80,7 @@
                     <p class="text-gray-500 mt-2 text-lg">{{ $coleccion['subtitulo'] }}</p>
                 </div>
                 <div class="hidden md:flex gap-4 items-center">
-                    <a href="{{ $coleccion['ver_todos_url'] }}" target="_blank"
+                    <a href="{{ $coleccion['ver_todos_url'] }}" target="_self"
                         class="mr-4 text-brand-blue font-bold hover:text-brand-blue-hover transition-colors flex items-center gap-2 text-sm uppercase tracking-widest">
                         {{ $coleccion['ver_todos_texto'] }} <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>

@@ -101,7 +101,7 @@
     </flux:table>
 
     {{-- Modal: Crear categoría --}}
-    <flux:modal wire:model="showCreateModal" class="max-w-lg w-full">
+    <flux:modal wire:model="showCreateModal" class="max-w-lg w-full" :dismissible="false">
         <form wire:submit="store" class="space-y-6">
             <div>
                 <flux:heading size="lg">Nueva categoría</flux:heading>
@@ -144,7 +144,7 @@
     </flux:modal>
 
     {{-- Modal: Editar categoría --}}
-    <flux:modal wire:model="showEditModal" class="max-w-lg w-full">
+    <flux:modal wire:model="showEditModal" class="max-w-lg w-full" :dismissible="false">
         <form wire:submit="update" class="space-y-6">
             <div>
                 <flux:heading size="lg">Editar categoría</flux:heading>
@@ -190,7 +190,7 @@
     </flux:modal>
 
     {{-- Modal: Confirmar eliminación --}}
-    <flux:modal wire:model="showDeleteModal" class="max-w-md w-full">
+    <flux:modal wire:model="showDeleteModal" class="max-w-md w-full" :dismissible="false">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">¿Eliminar categoría?</flux:heading>

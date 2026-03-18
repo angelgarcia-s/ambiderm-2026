@@ -57,6 +57,11 @@
     }
 }
 
+/* Backdrop oscuro para modales del CMS admin */
+[data-flux-modal] > dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.50);
+}
+
 [data-flux-field]:not(ui-radio, ui-checkbox) {
     @apply grid gap-2;
 }

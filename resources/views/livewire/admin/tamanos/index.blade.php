@@ -97,7 +97,7 @@
     </flux:table>
 
     {{-- Modal: Crear/Editar tamaño --}}
-    <flux:modal wire:model="showModal" class="max-w-md w-full">
+    <flux:modal wire:model="showModal" class="max-w-md w-full" :dismissible="false">
         <form wire:submit="save" class="space-y-6">
             <div>
                 <flux:heading size="lg">{{ $isEditing ? 'Editar tamaño' : 'Nuevo tamaño' }}</flux:heading>
@@ -140,7 +140,7 @@
     </flux:modal>
 
     {{-- Modal: Confirmar eliminación --}}
-    <flux:modal wire:model="showDeleteModal" class="max-w-md w-full">
+    <flux:modal wire:model="showDeleteModal" class="max-w-md w-full" :dismissible="false">
         <div class="space-y-6">
             <div>
                 <flux:heading size="lg">¿Eliminar tamaño?</flux:heading>
