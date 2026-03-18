@@ -219,7 +219,10 @@
                         AMBIDERM S.A. DE C.V.</p>
                 </div>
                 <div class="flex flex-wrap justify-center gap-x-8 gap-y-2">
-                    <a href="#" class="text-[10px] font-bold text-gray-400 hover:text-brand-blue transition-colors uppercase tracking-widest">Aviso de Privacidad</a>
+                    <a href="{{ route('terminos') }}" class="text-[10px] font-bold text-gray-400 hover:text-brand-blue transition-colors uppercase tracking-widest">Términos</a>
+                    <a href="{{ route('privacidad') }}" class="text-[10px] font-bold text-gray-400 hover:text-brand-blue transition-colors uppercase tracking-widest">Privacidad</a>
+                    <a href="{{ route('cookies') }}" class="text-[10px] font-bold text-gray-400 hover:text-brand-blue transition-colors uppercase tracking-widest">Cookies</a>
+                    <a href="{{ route('bolsa-de-trabajo') }}" class="text-[10px] font-bold text-gray-400 hover:text-brand-blue transition-colors uppercase tracking-widest">Bolsa de Trabajo</a>
                 </div>
             </div>
         </div>

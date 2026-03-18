@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\UsuariosController;
 use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NosotrosController;
 use App\Http\Controllers\ProductosPublicController;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,12 @@ Route::post('/contacto', [ContactoController::class, 'send'])->name('contacto.se
 
 Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
 Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');
+
+// Páginas legales y bolsa de trabajo
+Route::get('/terminos-y-condiciones', [LegalController::class, 'terminos'])->name('terminos');
+Route::get('/aviso-de-privacidad', [LegalController::class, 'privacidad'])->name('privacidad');
+Route::get('/politica-de-cookies', [LegalController::class, 'cookies'])->name('cookies');
+Route::get('/bolsa-de-trabajo', [LegalController::class, 'bolsaDeTrabajo'])->name('bolsa-de-trabajo');
 
 // Redirects legacy (301)
 Route::redirect('/producto-detalle', '/productos', 301)->name('producto-detalle');
