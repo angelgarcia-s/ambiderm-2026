@@ -53,6 +53,7 @@
             <flux:table.column>Slug</flux:table.column>
             <flux:table.column>Productos</flux:table.column>
             <flux:table.column>Estado</flux:table.column>
+            <flux:table.column>Verif. Prof.</flux:table.column>
             <flux:table.column>Orden</flux:table.column>
             <flux:table.column align="end">Acciones</flux:table.column>
         </flux:table.columns>
@@ -83,6 +84,13 @@
                             <flux:badge color="zinc" size="sm">Inactivo</flux:badge>
                         @endif
                     </flux:table.cell>
+                    <flux:table.cell>
+                        @if ($categoria->requiere_verificacion)
+                            <flux:badge color="blue" size="sm" icon="shield-check">Sí</flux:badge>
+                        @else
+                            <flux:badge color="zinc" size="sm">No</flux:badge>
+                        @endif
+                    </flux:table.cell>
                     <flux:table.cell>{{ $categoria->orden }}</flux:table.cell>
                     <flux:table.cell align="end">
                         <div class="flex items-center justify-end gap-2">
@@ -104,7 +112,7 @@
                 </flux:table.row>
             @empty
                 <flux:table.row>
-                    <flux:table.cell colspan="7" class="text-center text-zinc-500 py-8">
+                    <flux:table.cell colspan="8" class="text-center text-zinc-500 py-8">
                         No hay categorías registradas.
                     </flux:table.cell>
                 </flux:table.row>
@@ -143,6 +151,14 @@
                 <flux:input wire:model="orden" label="Orden" type="number" min="0" />
                 <div class="flex items-end pb-1">
                     <flux:switch wire:model="activo" label="Activo" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                <flux:switch wire:model="requiereVerificacion" />
+                <div>
+                    <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">Requiere verificación profesional</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">El visitante deberá confirmar que es profesional de la salud para ver esta categoría.</p>
                 </div>
             </div>
 
@@ -189,6 +205,14 @@
                 <flux:input wire:model="orden" label="Orden" type="number" min="0" />
                 <div class="flex items-end pb-1">
                     <flux:switch wire:model="activo" label="Activo" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3 p-3 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800">
+                <flux:switch wire:model="requiereVerificacion" />
+                <div>
+                    <p class="text-sm font-medium text-zinc-800 dark:text-zinc-200">Requiere verificación profesional</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">El visitante deberá confirmar que es profesional de la salud para ver esta categoría.</p>
                 </div>
             </div>
 

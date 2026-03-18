@@ -44,6 +44,7 @@ class Index extends Component
     public $imagen = null;
     public ?string $imagenActual = null;
     public bool $activo = true;
+    public bool $requiereVerificacion = false;
     public int $orden = 0;
 
     public function updatingSearch(): void
@@ -72,11 +73,12 @@ class Index extends Component
         $this->validate($this->rules(), $this->messages());
 
         $data = [
-            'nombre'     => $this->nombre,
-            'slug'       => $this->slug,
-            'descripcion' => $this->descripcion ?: null,
-            'activo'     => $this->activo,
-            'orden'      => $this->orden,
+            'nombre'                 => $this->nombre,
+            'slug'                   => $this->slug,
+            'descripcion'            => $this->descripcion ?: null,
+            'activo'                 => $this->activo,
+            'requiere_verificacion'  => $this->requiereVerificacion,
+            'orden'                  => $this->orden,
         ];
 
         if ($this->imagen) {
@@ -104,6 +106,7 @@ class Index extends Component
         $this->imagenActual = $categoria->imagen;
         $this->imagen = null;
         $this->activo = $categoria->activo;
+        $this->requiereVerificacion = $categoria->requiere_verificacion;
         $this->orden = $categoria->orden;
         $this->resetValidation();
         $this->showEditModal = true;
@@ -117,11 +120,12 @@ class Index extends Component
         $this->validate($this->rules(isUpdate: true), $this->messages());
 
         $data = [
-            'nombre'     => $this->nombre,
-            'slug'       => $this->slug,
-            'descripcion' => $this->descripcion ?: null,
-            'activo'     => $this->activo,
-            'orden'      => $this->orden,
+            'nombre'                 => $this->nombre,
+            'slug'                   => $this->slug,
+            'descripcion'            => $this->descripcion ?: null,
+            'activo'                 => $this->activo,
+            'requiere_verificacion'  => $this->requiereVerificacion,
+            'orden'                  => $this->orden,
         ];
 
         if ($this->imagen) {
@@ -351,12 +355,13 @@ class Index extends Component
             : 'unique:categorias,slug';
 
         return [
-            'nombre'     => ['required', 'string', 'max:100'],
-            'slug'       => ['required', 'string', 'max:120', $slugUnique],
-            'descripcion' => ['nullable', 'string', 'max:500'],
-            'imagen'     => ['nullable', 'image', 'max:2048'],
-            'activo'     => ['boolean'],
-            'orden'      => ['integer', 'min:0'],
+            'nombre'               => ['required', 'string', 'max:100'],
+            'slug'                 => ['required', 'string', 'max:120', $slugUnique],
+            'descripcion'          => ['nullable', 'string', 'max:500'],
+            'imagen'               => ['nullable', 'image', 'max:2048'],
+            'activo'               => ['boolean'],
+            'requiereVerificacion' => ['boolean'],
+            'orden'                => ['integer', 'min:0'],
         ];
     }
 
@@ -368,6 +373,7 @@ class Index extends Component
         $this->imagen = null;
         $this->imagenActual = null;
         $this->activo = true;
+        $this->requiereVerificacion = false;
         $this->orden = 0;
         $this->editingCategoriaId = null;
         $this->deletingCategoriaId = null;

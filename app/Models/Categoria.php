@@ -16,6 +16,7 @@ class Categoria extends Model
         'descripcion',
         'imagen',
         'activo',
+        'requiere_verificacion',
         'orden',
     ];
 
@@ -23,6 +24,7 @@ class Categoria extends Model
     {
         return [
             'activo' => 'boolean',
+            'requiere_verificacion' => 'boolean',
             'orden' => 'integer',
         ];
     }

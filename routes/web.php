@@ -14,6 +14,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LegalController;
 use App\Http\Controllers\NosotrosController;
 use App\Http\Controllers\ProductosPublicController;
+use App\Http\Controllers\VerificacionProfesionalController;
 use Illuminate\Support\Facades\Route;
 
 // frontend routes
@@ -25,8 +26,17 @@ Route::get('/nosotros', [NosotrosController::class, 'index'])->name('nosotros');
 Route::get('/contacto', fn () => redirect('/#contacto'))->name('contacto');
 Route::post('/contacto', [ContactoController::class, 'send'])->name('contacto.send')->middleware('throttle:3,1');
 
-Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
-Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');
+// Verificación profesional de la salud
+Route::get('/verificacion-profesional', [VerificacionProfesionalController::class, 'show'])
+    ->name('verificacion-profesional');
+Route::post('/verificacion-profesional/aceptar', [VerificacionProfesionalController::class, 'aceptar'])
+    ->name('verificacion-profesional.aceptar')
+    ->middleware('throttle:10,1');
+
+Route::middleware('profesional.salud')->group(function () {
+    Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
+    Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');
+});
 
 // Páginas legales y bolsa de trabajo
 Route::get('/terminos-y-condiciones', [LegalController::class, 'terminos'])->name('terminos');
