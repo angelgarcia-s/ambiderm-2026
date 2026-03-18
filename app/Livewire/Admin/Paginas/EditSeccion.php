@@ -238,7 +238,6 @@ class EditSeccion extends Component
                 'contenido.distribuidor_subtitulo' => 'required|string|max:200',
                 'contenido.distribuidor_url' => 'required|url|max:500',
                 'contenido.distribuidor_icono' => 'required|string|max:500',
-                'contenido.form_action_url' => 'required|url|max:500',
                 'contenido.email' => 'required|email|max:200',
             ],
             'footer.copyright' => [

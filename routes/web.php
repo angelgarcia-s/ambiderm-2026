@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\TamanosController;
 use App\Http\Controllers\Admin\UsuariosController;
+use App\Http\Controllers\ContactoController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NosotrosController;
@@ -19,6 +20,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/nosotros', [NosotrosController::class, 'index'])->name('nosotros');
+
+Route::get('/contacto', fn () => redirect('/#contacto'))->name('contacto');
+Route::post('/contacto', [ContactoController::class, 'send'])->name('contacto.send')->middleware('throttle:3,1');
 
 Route::get('/productos', [ProductosPublicController::class, 'index'])->name('productos');
 Route::get('/productos/{slug}', [ProductosPublicController::class, 'show'])->name('producto.detalle');

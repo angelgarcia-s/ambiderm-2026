@@ -8,78 +8,6 @@
 
 <footer class="bg-white pt-32 overflow-hidden" id="contacto">
 
-  <!-- Redes Sociales & Logo -->
-  @if ($footer->has('redes_sociales'))
-  <div class="max-w-[1200px] mx-auto px-6 mb-32">
-    <div class="flex flex-col md:flex-row justify-between items-center gap-12">
-      <div class="reveal reveal-fade-in">
-        <img src="{{ $redes['logo'] }}" alt="Ambiderm Logo" class="h-12 md:h-16">
-      </div>
-      <div class="text-center md:text-right reveal reveal-fade-in">
-        <h4 class="text-2xl md:text-4xl font-black tracking-tighter text-brand-ink mb-6">
-          {!! nl2br(e($redes['titulo'])) !!}
-        </h4>
-        <div class="flex justify-center md:justify-end gap-6">
-          <a href="{{ $redes['instagram_url'] }}" target="_blank"
-            class="w-14 h-14 rounded-full bg-[#fbfbfd] border border-gray-100 flex items-center justify-center hover:scale-110 hover:shadow-xl transition-all">
-            <img src="{{ $redes['instagram_icono'] }}" alt="Instagram" class="w-6 h-6">
-          </a>
-          <a href="{{ $redes['facebook_url'] }}" target="_blank"
-            class="w-14 h-14 rounded-full bg-[#fbfbfd] border border-gray-100 flex items-center justify-center hover:scale-110 hover:shadow-xl transition-all">
-            <img src="{{ $redes['facebook_icono'] }}" alt="Facebook" class="w-6 h-6">
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-  @endif
-
-  <!-- Mapas & Sucursales -->
-  @if ($footer->has('sucursales'))
-  <div class="bg-[#fbfbfd] py-32 border-t border-gray-100">
-    <div class="max-w-[1200px] mx-auto px-6">
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-20">
-        <div class="reveal reveal-fade-in">
-          <h3 class="text-3xl md:text-5xl font-black tracking-tighter text-brand-ink mb-12">{!! nl2br(e($sucursales['titulo'])) !!}</h3>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-10">
-            @foreach ($sucursales['items'] as $i => $sucursal)
-              <div class="group cursor-pointer sucursal-btn {{ $i === 0 ? 'active' : '' }}" data-map="{{ $sucursal['mapa_key'] }}" data-url="{{ $sucursal['mapa_url'] }}" data-img="{{ $sucursal['mapa_imagen'] }}">
-                <p class="text-xs font-bold {{ $i === 0 ? 'text-brand-blue' : 'text-gray-400' }} uppercase tracking-widest mb-3">{{ $sucursal['region'] }}</p>
-                <h5 class="text-xl font-bold text-brand-ink mb-2 group-hover:text-brand-blue transition-colors">{{ $sucursal['nombre'] }}</h5>
-                <p class="text-gray-500 text-sm leading-relaxed">
-                  {!! nl2br(e($sucursal['direccion'])) !!}<br>
-                  <a href="tel:{{ preg_replace('/[^+0-9]/', '', $sucursal['telefono']) }}" class="hover:text-brand-blue transition-colors font-semibold">{{ $sucursal['telefono'] }}</a>
-                </p>
-              </div>
-            @endforeach
-          </div>
-          @if (!empty($contacto['email']))
-          <div class="mt-16 reveal reveal-fade-in">
-            <a href="mailto:{{ $contacto['email'] }}" class="inline-flex items-center gap-4 text-brand-ink font-bold text-2xl hover:text-brand-blue transition-all">
-              {{ $contacto['email'] }}
-              <i data-lucide="arrow-up-right" class="w-6 h-6"></i>
-            </a>
-          </div>
-          @endif
-        </div>
-
-        <!-- Mapa Interactivo -->
-        <div class="reveal reveal-scale-in relative group">
-          <div class="absolute inset-0 bg-blue-100 blur-[100px] opacity-20 -z-10 transform scale-125"></div>
-          <a id="main-map-link" href="{{ $sucursales['items'][0]['mapa_url'] }}" target="_blank"
-            class="block relative rounded-[40px] overflow-hidden shadow-2xl border border-white">
-            <img id="main-map-img" src="{{ $sucursales['items'][0]['mapa_imagen'] }}" alt="Mapa Ubicación"
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-            <div class="absolute inset-x-0 bottom-0 p-8 bg-gradient-to-t from-black/50 to-transparent">
-              <span class="text-white font-bold bg-blue-600/80 px-4 py-2 rounded-full text-xs">ABRIR EN GOOGLE MAPS</span>
-            </div>
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
-  @endif
-
   <!-- Formulario de Contacto & Distribuidor -->
   @if ($footer->has('contacto'))
   <div class="bg-white py-32">
@@ -104,25 +32,45 @@
         </div>
 
         <div class="reveal reveal-fade-in bg-[#fbfbfd] p-10 md:p-16 rounded-[40px] border border-gray-100 shadow-sm">
-          <form action="{{ $contacto['form_action_url'] }}" method="POST" class="space-y-6">
+          @if (session('contacto_enviado'))
+            <div class="flex flex-col items-center justify-center py-12 text-center gap-4">
+              <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                <i data-lucide="check" class="w-8 h-8 text-green-600"></i>
+              </div>
+              <h4 class="text-xl font-bold text-brand-ink">¡Mensaje enviado!</h4>
+              <p class="text-gray-500">Un especialista se pondrá en contacto contigo a la brevedad.</p>
+            </div>
+          @else
+          <form action="{{ route('contacto.send') }}" method="POST" class="space-y-6">
+            @csrf
+            {{-- Honeypot anti-spam: oculto para humanos, los bots lo llenan --}}
+            <div aria-hidden="true" style="display:none;">
+              <input type="text" name="website" value="" autocomplete="off" tabindex="-1">
+            </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 px-2">Nombre</label>
-                <input type="text" placeholder="Tu nombre" class="w-full bg-white border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                <input type="text" name="nombre" value="{{ old('nombre') }}" placeholder="Tu nombre" class="w-full bg-white border @error('nombre') border-red-400 @else border-gray-100 @enderror rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                @error('nombre') <p class="mt-1 px-2 text-xs text-red-500">{{ $message }}</p> @enderror
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 px-2">Correo</label>
-                <input type="email" placeholder="email@ejemplo.com" class="w-full bg-white border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                <input type="email" name="correo" value="{{ old('correo') }}" placeholder="email@ejemplo.com" class="w-full bg-white border @error('correo') border-red-400 @else border-gray-100 @enderror rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all">
+                @error('correo') <p class="mt-1 px-2 text-xs text-red-500">{{ $message }}</p> @enderror
               </div>
             </div>
             <div>
               <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 px-2">Mensaje</label>
-              <textarea rows="4" placeholder="¿En qué podemos ayudarte?" class="w-full bg-white border border-gray-100 rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all resize-none"></textarea>
+              <textarea rows="4" name="mensaje" placeholder="¿En qué podemos ayudarte?" class="w-full bg-white border @error('mensaje') border-red-400 @else border-gray-100 @enderror rounded-2xl px-6 py-4 focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all resize-none">{{ old('mensaje') }}</textarea>
+              @error('mensaje') <p class="mt-1 px-2 text-xs text-red-500">{{ $message }}</p> @enderror
             </div>
-            <button class="w-full bg-brand-ink text-white py-5 rounded-full font-bold text-lg hover:bg-brand-blue hover:shadow-2xl shadow-blue-500/30 transition-all transform active:scale-[0.98]">
+            <button type="submit"
+              onclick="this.disabled=true; this.innerText='Enviando…'; this.form.submit();"
+              class="w-full bg-brand-ink text-white py-5 rounded-full font-bold text-lg hover:bg-brand-blue hover:shadow-2xl shadow-blue-500/30 transition-all transform active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed">
               ENVIAR MENSAJE
             </button>
           </form>
+          @endif
         </div>
       </div>
     </div>

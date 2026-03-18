@@ -301,7 +301,6 @@ class SeccionesContenidoSeeder extends Seeder
                     'distribuidor_subtitulo' => 'Únete a la red Ambiderm',
                     'distribuidor_url' => 'https://share.hsforms.com/1vl6EkSEKQBW_SNv3Im1qcA3qrdx',
                     'distribuidor_icono' => '/images/distribuidor-icon.svg',
-                    'form_action_url' => 'https://ambiderm.com.mx/contacto-enviar',
                     'email' => 'info@ambiderm.com.mx',
                 ],
             ],

@@ -21,5 +21,4 @@
     <flux:input wire:model="contenido.distribuidor_icono" label="URL icono distribuidor" type="url" placeholder="https://...distribuidor-icon.svg" />
 </div>
 
-<flux:input wire:model="contenido.form_action_url" label="URL acción del formulario de contacto" type="url"
-    placeholder="https://ambiderm.com.mx/contacto-enviar" class="mt-4" />
+
