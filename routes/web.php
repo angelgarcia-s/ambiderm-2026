@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\ProductosController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\TamanosController;
 use App\Http\Controllers\Admin\UsuariosController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\NosotrosController;
 use App\Http\Controllers\ProductosPublicController;
@@ -29,12 +30,12 @@ Route::redirect('/guantes-vynil', '/productos', 301)->name('guantes-vynil');
 
 // backend routes
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Admin: Usuarios (CRUD)
     Route::prefix('admin')->name('admin.')->group(function () {
         // Usuarios
-        Route::view('/', 'dashboard')->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::get('usuarios', [UsuariosController::class, 'index'])->name('usuarios.index');
         Route::get('usuarios/crear', [UsuariosController::class, 'create'])->name('usuarios.create');
         Route::post('usuarios', [UsuariosController::class, 'store'])->name('usuarios.store');
