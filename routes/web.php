@@ -94,4 +94,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+//landings PRODUCTOS
+Route::get('/landings/vinyl_synmax', function () {
+    return view('landings.vinyl_synmax');
+})->name('landing.vinyl_synmax');
+
+Route::get('/landings/toallitas', function () {
+    return view('landings.toallitas');
+})->name('landing.toallitas');
+
+Route::get('/landings/ortopedico', function () {
+    return view('landings.ortopedico');
+})->name('landing.ortopedico');
+
+Route::post('/brevo/rfc-trigger', [App\Http\Controllers\BrevoRfcTriggerController::class, 'handle'])->name('brevo.rfc-trigger');
+
 require __DIR__.'/settings.php';
