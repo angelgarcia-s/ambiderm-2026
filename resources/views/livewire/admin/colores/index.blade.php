@@ -7,11 +7,23 @@
             <flux:subheading>Catálogo de colores disponibles para productos.</flux:subheading>
         </div>
 
-        @can('productos.crear')
-            <flux:button variant="primary" wire:click="create" icon="plus">
-                Nuevo color
-            </flux:button>
-        @endcan
+        <div class="flex items-center gap-2">
+            @can('catalogos.exportar')
+                <flux:button variant="ghost" wire:click="exportar" icon="arrow-down-tray">
+                    Exportar CSV
+                </flux:button>
+            @endcan
+            @can('catalogos.importar')
+                <flux:button variant="ghost" wire:click="abrirImport" icon="arrow-up-tray">
+                    Importar CSV
+                </flux:button>
+            @endcan
+            @can('productos.crear')
+                <flux:button variant="primary" wire:click="create" icon="plus">
+                    Nuevo color
+                </flux:button>
+            @endcan
+        </div>
     </div>
 
     {{-- Mensajes de feedback --}}
@@ -171,6 +183,68 @@
                 </flux:button>
             </div>
         </div>
+    </flux:modal>
+
+    {{-- Modal: Importar CSV --}}
+    <flux:modal wire:model="showImportModal" class="max-w-lg w-full" :dismissible="false">
+        <form wire:submit="procesarImportacion" class="space-y-6">
+            <div>
+                <flux:heading size="lg">Importar colores desde CSV</flux:heading>
+                <flux:subheading>Solo se crearán registros nuevos. Los que ya existan (mismo nombre) <strong>no serán modificados</strong>. Columnas requeridas: <code>nombre, hex, orden</code>.</flux:subheading>
+            </div>
+
+            <div class="flex items-center gap-3 p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800">
+                <flux:icon.table-cells class="size-5 text-zinc-400 shrink-0" />
+                <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Plantilla de ejemplo</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Columnas: nombre, hex, orden</p>
+                </div>
+                <flux:button wire:click="descargarTemplate" size="sm" variant="ghost" icon="arrow-down-tray">
+                    Descargar .xlsx
+                </flux:button>
+            </div>
+
+            <div>
+                <flux:label>Archivo CSV</flux:label>
+                <input type="file" wire:model="archivoCsv" accept=".xlsx,.csv,text/csv"
+                       class="mt-1 block w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 dark:file:bg-zinc-700 dark:file:text-zinc-300" />
+                @error('archivoCsv') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+            </div>
+
+            @if (!empty($importErrors))
+                <div class="rounded-lg border border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800 p-4 space-y-1">
+                    <p class="text-sm font-semibold text-red-700 dark:text-red-400">{{ count($importErrors) }} error(es) encontrado(s):</p>
+                    <ul class="list-disc list-inside text-sm text-red-600 dark:text-red-300 max-h-40 overflow-y-auto">
+                        @foreach ($importErrors as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            @if (!empty($importWarnings))
+                <div class="rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-700 p-4 space-y-1">
+                    <p class="text-sm font-semibold text-amber-700 dark:text-amber-400">{{ count($importWarnings) }} registro(s) omitido(s) por ya existir:</p>
+                    <ul class="list-disc list-inside text-sm text-amber-700 dark:text-amber-300 max-h-40 overflow-y-auto">
+                        @foreach ($importWarnings as $warning)
+                            <li>{{ $warning }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @if ($importCount > 0)
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">{{ $importCount }} {{ $importCount === 1 ? 'registro nuevo creado correctamente' : 'registros nuevos creados correctamente' }}.</p>
+                @endif
+            @endif
+
+            <div class="flex justify-end gap-3">
+                <flux:modal.close>
+                    <flux:button variant="ghost">Cancelar</flux:button>
+                </flux:modal.close>
+                <flux:button variant="primary" type="submit" icon="arrow-up-tray">
+                    Importar
+                </flux:button>
+            </div>
+        </form>
     </flux:modal>
 
 </div>

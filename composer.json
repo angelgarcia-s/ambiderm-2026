@@ -13,9 +13,11 @@
         "laravel/fortify": "^1.30",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "league/csv": "^9.28",
         "livewire/blaze": "^1.0",
         "livewire/flux": "^2.9.0",
         "livewire/livewire": "^4.0",
+        "openspout/openspout": "^5.3",
         "spatie/laravel-permission": "^7.2"
     },
     "require-dev": {

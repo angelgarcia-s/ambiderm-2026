@@ -4,9 +4,17 @@ namespace App\Livewire\Admin\Categorias;
 
 use App\Models\Categoria;
 use Illuminate\Support\Str;
+use Livewire\Attributes\Renderless;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use OpenSpout\Common\Entity\Row;
+use OpenSpout\Common\Entity\Style\Style;
+use OpenSpout\Reader\CSV\Options as CsvReadOptions;
+use OpenSpout\Reader\CSV\Reader as CsvReader;
+use OpenSpout\Reader\XLSX\Reader as XlsxReader;
+use OpenSpout\Writer\XLSX\Writer as XlsxWriter;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class Index extends Component
 {
@@ -17,6 +25,14 @@ class Index extends Component
     public bool $showCreateModal = false;
     public bool $showEditModal = false;
     public bool $showDeleteModal = false;
+    public bool $showImportModal = false;
+
+    // Importación CSV
+    public $archivoCsv = null;
+    public array $importErrors   = [];
+    public array $importWarnings = [];
+    public int $importCount   = 0;
+    public int $importSkipped = 0;
 
     public ?int $editingCategoriaId = null;
     public ?int $deletingCategoriaId = null;
@@ -149,6 +165,168 @@ class Index extends Component
         $this->showDeleteModal = false;
         $this->deletingCategoriaId = null;
         session()->flash('success', 'Categoría eliminada.');
+    }
+
+    // — Exportar / Importar —
+
+    #[Renderless]
+    public function exportar(): StreamedResponse
+    {
+        $this->authorize('catalogos.exportar');
+
+        $categorias = Categoria::ordenado()->get(['nombre', 'slug', 'descripcion', 'activo', 'orden']);
+        $tmp = tempnam(sys_get_temp_dir(), 'export_cat_') . '.xlsx';
+
+        $headerStyle = (new Style())->withFontBold(true);
+        $writer = new XlsxWriter();
+        $writer->openToFile($tmp);
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'slug', 'descripcion', 'activo', 'orden'], $headerStyle));
+        foreach ($categorias as $cat) {
+            $writer->addRow(Row::fromValues([
+                $cat->nombre, $cat->slug, $cat->descripcion ?? '',
+                $cat->activo ? 1 : 0, $cat->orden,
+            ]));
+        }
+        $writer->close();
+
+        return response()->streamDownload(function () use ($tmp) {
+            readfile($tmp);
+            @unlink($tmp);
+        }, 'categorias.xlsx', ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
+    }
+
+    #[Renderless]
+    public function descargarTemplate(): StreamedResponse
+    {
+        $this->authorize('catalogos.importar');
+
+        $tmp = tempnam(sys_get_temp_dir(), 'tpl_cat_') . '.xlsx';
+        $headerStyle = (new Style())->withFontBold(true);
+
+        $writer = new XlsxWriter();
+        $writer->openToFile($tmp);
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'descripcion', 'activo', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValues(['Guantes de Látex', 'Guantes de látex para uso médico', 1, 1]));
+        $writer->addRow(Row::fromValues(['Guantes de Nitrilo', 'Guantes de nitrilo sin polvo', 1, 2]));
+        $writer->close();
+
+        return response()->streamDownload(function () use ($tmp) {
+            readfile($tmp);
+            @unlink($tmp);
+        }, 'template-categorias.xlsx', ['Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
+    }
+
+    public function abrirImport(): void
+    {
+        $this->authorize('catalogos.importar');
+        $this->archivoCsv     = null;
+        $this->importErrors   = [];
+        $this->importWarnings = [];
+        $this->importCount    = 0;
+        $this->importSkipped  = 0;
+        $this->resetValidation('archivoCsv');
+        $this->showImportModal = true;
+    }
+
+    public function procesarImportacion(): void
+    {
+        $this->authorize('catalogos.importar');
+
+        $this->validate(
+            ['archivoCsv' => ['required', 'file', 'mimes:xlsx,csv,txt', 'max:4096']],
+            [
+                'archivoCsv.required' => 'Selecciona un archivo.',
+                'archivoCsv.mimes'    => 'El archivo debe ser XLSX o CSV.',
+                'archivoCsv.max'      => 'El archivo no puede pesar más de 4 MB.',
+            ]
+        );
+
+        $path = $this->archivoCsv->getRealPath();
+        $ext  = strtolower($this->archivoCsv->getClientOriginalExtension());
+
+        $count    = 0;
+        $skipped  = 0;
+        $errors   = [];
+        $warnings = [];
+
+        if ($ext === 'xlsx') {
+            $reader = new XlsxReader();
+        } else {
+            $opts = new CsvReadOptions();
+            $opts->ENCODING = 'UTF-8';
+            $reader = new CsvReader($opts);
+        }
+
+        $reader->open($path);
+        $header = null;
+        $line   = 0;
+
+        foreach ($reader->getSheetIterator() as $sheet) {
+            foreach ($sheet->getRowIterator() as $row) {
+                $line++;
+                $values = array_map(
+                    fn ($v) => trim((string) $v),
+                    $row->toArray()
+                );
+
+                if ($header === null) {
+                    $header = array_map('strtolower', $values);
+                    continue;
+                }
+                if (count($values) !== count($header)) {
+                    $errors[] = "Fila {$line}: número de columnas incorrecto.";
+                    continue;
+                }
+                $data   = array_combine($header, $values);
+                $nombre = $data['nombre'] ?? '';
+                if ($nombre === '') {
+                    $errors[] = "Fila {$line}: el campo 'nombre' está vacío.";
+                    continue;
+                }
+                $slug = Str::slug($nombre);
+                if (! Categoria::where('slug', $slug)->exists()) {
+                    Categoria::create([
+                        'nombre'      => $nombre,
+                        'descripcion' => $data['descripcion'] ?? null ?: null,
+                        'activo'      => (($data['activo'] ?? '1') === '1'),
+                        'orden'       => (int) ($data['orden'] ?? 0),
+                    ]);
+                    $count++;
+                } else {
+                    $warnings[] = "Fila {$line}: «{$nombre}» ya existe, omitido.";
+                    $skipped++;
+                }
+            }
+            break; // solo primera hoja
+        }
+        $reader->close();
+        cache()->forget('nav.categorias');
+
+        $this->importErrors   = $errors;
+        $this->importWarnings = $warnings;
+        $this->importCount    = $count;
+        $this->importSkipped  = $skipped;
+        $this->archivoCsv     = null;
+
+        if (empty($errors) && empty($warnings)) {
+            $this->showImportModal = false;
+            $this->resetPage();
+            session()->flash('success', $this->buildImportMessage($count, $skipped, 'categoría', 'categorías'));
+        }
+    }
+
+    private function buildImportMessage(int $count, int $skipped, string $singular, string $plural): string
+    {
+        $parts = [];
+        if ($count > 0) {
+            $parts[] = "{$count} " . ($count === 1 ? "{$singular} nuevo importado" : "{$plural} nuevos importados");
+        } else {
+            $parts[] = 'Ningún registro nuevo importado';
+        }
+        if ($skipped > 0) {
+            $parts[] = "{$skipped} " . ($skipped === 1 ? 'ya existía y fue omitido' : 'ya existían y fueron omitidos');
+        }
+        return implode(' — ', $parts) . '.';
     }
 
     private function messages(): array

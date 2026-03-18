@@ -46,6 +46,10 @@ class RolesAndPermissionsSeeder extends Seeder
         // Páginas públicas (ADR-002)
         'paginas.ver',
         'paginas.editar',
+
+        // Catálogos (importar/exportar masivo)
+        'catalogos.importar',
+        'catalogos.exportar',
     ];
 
     /**
@@ -127,6 +131,8 @@ class RolesAndPermissionsSeeder extends Seeder
             'productos.eliminar',
             'paginas.ver',
             'paginas.editar',
+            'catalogos.importar',
+            'catalogos.exportar',
         ]);
 
         // editor: solo contenido
@@ -138,6 +144,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'productos.editar',
             'paginas.ver',
             'paginas.editar',
+            'catalogos.exportar',
         ]);
     }
 }
