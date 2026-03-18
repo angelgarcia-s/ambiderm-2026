@@ -4,14 +4,21 @@ namespace App\Livewire\Admin\Paginas;
 
 use App\Models\SeccionContenido;
 use App\Services\ContenidoService;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 class EditSeccion extends Component
 {
+    use WithFileUploads;
+
     public SeccionContenido $seccionContenido;
 
     /** Contenido editable (copia del JSON) */
     public array $contenido = [];
+
+    /** Imágenes temporales para items con upload (ej. soluciones_medicas) */
+    public array $imagenesItems = [];
 
     public function mount(SeccionContenido $seccionContenido): void
     {
@@ -25,6 +32,25 @@ class EditSeccion extends Component
     public function save(): void
     {
         $this->authorize('update', $this->seccionContenido);
+
+        // Procesar uploads de imágenes para items con file upload
+        if (!empty($this->imagenesItems)) {
+            $fileRules = [];
+            foreach ($this->imagenesItems as $i => $file) {
+                if ($file) {
+                    $fileRules["imagenesItems.{$i}"] = 'image|max:2048';
+                }
+            }
+            if (!empty($fileRules)) {
+                $this->validate($fileRules);
+            }
+            foreach ($this->imagenesItems as $i => $file) {
+                if ($file) {
+                    $path = $file->store('secciones', 'public');
+                    $this->contenido['items'][$i]['imagen'] = Storage::url($path);
+                }
+            }
+        }
 
         $this->validate($this->getRulesForSection());
 
@@ -138,7 +164,7 @@ class EditSeccion extends Component
                 'contenido.items' => 'required|array|min:1|max:6',
                 'contenido.items.*.etiqueta' => 'required|string|max:50',
                 'contenido.items.*.titulo' => 'required|string|max:100',
-                'contenido.items.*.imagen' => 'required|string|max:500',
+                'contenido.items.*.imagen' => 'nullable|string|max:500',
                 'contenido.items.*.url' => 'required|string|max:500',
             ],
             'home.eco_friendly' => [
