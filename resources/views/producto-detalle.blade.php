@@ -49,7 +49,7 @@
                 @endif
 
                 @if ($producto->descripcion)
-                    <p class="text-gray-600 leading-relaxed mb-8 text-lg">{{ $producto->descripcion }}</p>
+                    <p class="text-gray-400 leading-6 mb-8 text-sm text-justify">{{ $producto->descripcion }}</p>
                 @endif
 
                 <!-- Selectors -->
@@ -111,7 +111,7 @@
 
                 {{-- Feature List (Características) --}}
                 @if (!empty($producto->caracteristicas))
-                    <ul class="space-y-3 mb-10">
+                    <ul class="space-y-1 mb-10">
                         @foreach ($producto->caracteristicas as $caracteristica)
                             <li class="flex items-center text-gray-600 font-medium">
                                 <i data-lucide="check-circle-2" class="w-5 h-5 text-brand-blue mr-3"></i> {{ $caracteristica }}

@@ -61,9 +61,9 @@ class SeccionesContenidoSeeder extends Seeder
                 'orden' => 2,
                 'contenido' => [
                     'badge' => 'NUEVO',
-                    'nombre_producto' => 'Vynil Synmax',
+                    'nombre_producto' => 'Vinyl Synmax',
                     'descripcion' => 'Siente la revolución en protección clínica. Una nueva era de seguridad y confort táctil.',
-                    'video_url' => '/videos/vynil.mp4',
+                    'video_url' => '/videos/vinyl.mp4',
                     'cta_texto' => 'Comprar ahora',
                     'cta_url' => '/productos',
                 ],
