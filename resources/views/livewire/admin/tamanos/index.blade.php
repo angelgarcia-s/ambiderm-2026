@@ -10,12 +10,12 @@
         <div class="flex items-center gap-2">
             @can('catalogos.exportar')
                 <flux:button variant="ghost" wire:click="exportar" icon="arrow-down-tray">
-                    Exportar CSV
+                    Exportar
                 </flux:button>
             @endcan
             @can('catalogos.importar')
                 <flux:button variant="ghost" wire:click="abrirImport" icon="arrow-up-tray">
-                    Importar CSV
+                    Importar
                 </flux:button>
             @endcan
             @can('productos.crear')
@@ -170,11 +170,11 @@
         </div>
     </flux:modal>
 
-    {{-- Modal: Importar CSV --}}
+    {{-- Modal: Importar--}}
     <flux:modal wire:model="showImportModal" class="max-w-lg w-full" :dismissible="false">
         <form wire:submit="procesarImportacion" class="space-y-6">
             <div>
-                <flux:heading size="lg">Importar tamaños desde CSV</flux:heading>
+                <flux:heading size="lg">Importar tamaños</flux:heading>
                 <flux:subheading>Solo se crearán registros nuevos. Los que ya existan (mismo nombre) <strong>no serán modificados</strong>. Columnas requeridas: <code>nombre, abreviatura, orden</code>.</flux:subheading>
             </div>
 
@@ -190,7 +190,7 @@
             </div>
 
             <div>
-                <flux:label>Archivo CSV</flux:label>
+                <flux:label>Archivo</flux:label>
                 <input type="file" wire:model="archivoCsv" accept=".xlsx,.csv,text/csv"
                        class="mt-1 block w-full text-sm text-zinc-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-zinc-100 file:text-zinc-700 hover:file:bg-zinc-200 dark:file:bg-zinc-700 dark:file:text-zinc-300" />
                 @error('archivoCsv') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
