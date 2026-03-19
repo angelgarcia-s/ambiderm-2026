@@ -71,12 +71,17 @@ class Producto extends Model
 
     public function tamanos(): BelongsToMany
     {
-        return $this->belongsToMany(Tamano::class, 'producto_tamano');
+        return $this->belongsToMany(Tamano::class, 'producto_tamano')
+            ->orderBy('orden')
+            ->orderBy('nombre');
     }
 
     public function colores(): BelongsToMany
     {
-        return $this->belongsToMany(Color::class, 'color_producto')->withPivot('imagen');
+        return $this->belongsToMany(Color::class, 'color_producto')
+            ->withPivot('imagen')
+            ->orderBy('orden')
+            ->orderBy('nombre');
     }
 
     // — Scopes —

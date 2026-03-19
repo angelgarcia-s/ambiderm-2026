@@ -59,30 +59,37 @@
                         {{-- Color Selector --}}
                         @if ($producto->colores->count())
                             <div>
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Color Seleccionado:
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Colores:</p>
+                                {{-- <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Color Seleccionado:
                                     <span id="color-name" class="text-brand-ink">{{ $producto->colores->first()->nombre }}</span>
-                                </p>
+                                </p> --}}
                                 <div class="flex flex-wrap gap-4">
                                     @foreach ($producto->colores as $i => $color)
                                         @php
                                             $pivotImg = $color->pivot->imagen ? Storage::url($color->pivot->imagen) : null;
                                         @endphp
                                         @if ($color->icono)
-                                            <button
-                                                class="w-10 h-10 rounded-full overflow-hidden color-option {{ $i === 0 ? 'active ring-2 ring-offset-2 ring-brand-blue' : 'opacity-50 hover:opacity-100' }}"
-                                                data-color="{{ $color->nombre }}"
-                                                @if ($pivotImg) data-img="{{ $pivotImg }}" @endif
-                                                aria-label="{{ $color->nombre }}">
-                                                <img src="{{ Storage::url($color->icono) }}" alt="{{ $color->nombre }}" class="w-full h-full object-cover">
-                                            </button>
+                                            <div class="flex flex-col items-center gap-1">
+                                                <button
+                                                    class="w-10 h-10 rounded-full overflow-hidden color-option {{ $i === 0 ? 'active ring-2 ring-offset-2 ring-transparent' : 'opacity-50 hover:opacity-100' }}"
+                                                    data-color="{{ $color->nombre }}"
+                                                    @if ($pivotImg) data-img="{{ $pivotImg }}" @endif
+                                                    aria-label="{{ $color->nombre }}">
+                                                    <img src="{{ Storage::url($color->icono) }}" alt="{{ $color->nombre }}" class="w-full h-full object-cover">
+                                                </button>
+                                                <span class="text-xs text-gray-500 text-center leading-tight">{{ $color->nombre }}</span>
+                                            </div>
                                         @else
-                                            <button
-                                                class="w-10 h-10 rounded-full color-option {{ $i === 0 ? 'active ring-2 ring-offset-2 ring-brand-blue' : 'opacity-50 hover:opacity-100' }}"
-                                                style="background-color: {{ $color->hex ?? '#ccc' }}"
-                                                data-color="{{ $color->nombre }}"
-                                                @if ($pivotImg) data-img="{{ $pivotImg }}" @endif
-                                                aria-label="{{ $color->nombre }}">
-                                            </button>
+                                            <div class="flex flex-col items-center gap-1">
+                                                <button
+                                                    class="w-10 h-10 rounded-full color-option {{ $i === 0 ? 'active ring-2 ring-offset-2 ring-transparent' : 'opacity-50 hover:opacity-100' }}"
+                                                    style="background-color: {{ $color->hex ?? '#ccc' }}"
+                                                    data-color="{{ $color->nombre }}"
+                                                    @if ($pivotImg) data-img="{{ $pivotImg }}" @endif
+                                                    aria-label="{{ $color->nombre }}">
+                                                    </button>
+                                                    <span class="text-xs text-gray-500 text-center leading-tight">{{ $color->nombre }}</span>
+                                                </div>
                                         @endif
                                     @endforeach
                                 </div>
@@ -92,16 +99,19 @@
                         {{-- Size Selector --}}
                         @if ($producto->tamanos->count())
                             <div>
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Talla</p>
+                                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Tamaños:</p>
                                 <div class="flex flex-wrap gap-3">
                                     @foreach ($producto->tamanos as $j => $tamano)
-                                        <button class="size-option w-12 h-12 rounded-xl border font-bold flex items-center justify-center {{ $j === 0 ? 'bg-brand-ink text-white border-brand-ink active' : 'border-gray-200 text-gray-500 hover:bg-gray-50' }}">
-                                            @if ($tamano->icono)
-                                                <img src="{{ Storage::url($tamano->icono) }}" alt="{{ $tamano->nombre }}" class="w-6 h-6 object-contain">
-                                            @else
-                                                {{ $tamano->abreviatura ?? $tamano->nombre }}
-                                            @endif
-                                        </button>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <button class="size-option w-12 h-12 rounded-xl border font-bold flex items-center justify-center border-gray-200 text-gray-500 hover:bg-gray-50 {{ $j === 0 ? 'active' : '' }}">
+                                                @if ($tamano->icono)
+                                                    <img src="{{ Storage::url($tamano->icono) }}" alt="{{ $tamano->nombre }}" class="w-6 h-6 object-contain">
+                                                @else
+                                                    {{ $tamano->abreviatura ?? $tamano->nombre }}
+                                                @endif
+                                            </button>
+                                            <span class="text-xs text-gray-500 text-center leading-tight">{{ $tamano->nombre }}</span>
+                                        </div>
                                     @endforeach
                                 </div>
                             </div>
@@ -271,10 +281,10 @@
             colorBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
                     colorBtns.forEach(b => {
-                        b.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-brand-blue');
+                        b.classList.remove('active', 'ring-2', 'ring-offset-2', 'ring-transparent');
                         b.classList.add('opacity-50');
                     });
-                    btn.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-brand-blue');
+                    btn.classList.add('active', 'ring-2', 'ring-offset-2', 'ring-transparent');
                     btn.classList.remove('opacity-50');
                     colorNameDisplay.textContent = btn.dataset.color;
                     if (btn.dataset.img) mainImage.src = btn.dataset.img;

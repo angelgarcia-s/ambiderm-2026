@@ -48,7 +48,9 @@ class Categoria extends Model
 
     public function productos(): BelongsToMany
     {
-        return $this->belongsToMany(Producto::class, 'categoria_producto');
+        return $this->belongsToMany(Producto::class, 'categoria_producto')
+            ->orderBy('orden')
+            ->orderBy('nombre');
     }
 
     // — Scopes —

@@ -100,7 +100,15 @@
 
                 @forelse ($productosDestacados as $producto)
                     <div class="product-item flex-none w-[320px] md:w-[450px] aspect-square group cursor-pointer"
-                        onclick="openDetail('{{ $producto->slug }}', '{{ e($producto->nombre) }}', '{{ e($producto->descripcion) }}', '{{ $producto->imagen_url }}', '{{ e($producto->categorias->first()?->nombre ?? $producto->material) }}')">
+                        onclick="openDetail(this)"
+                        data-nombre="{{ e($producto->nombre) }}"
+                        data-descripcion="{{ e($producto->descripcion ?? '') }}"
+                        data-imagen="{{ $producto->imagen_url }}"
+                        data-tag="{{ e($producto->categorias->first()?->nombre ?? $producto->material ?? '') }}"
+                        data-tamanos="{{ $producto->tamanos->map(fn($t) => ['abreviatura' => $t->abreviatura, 'nombre' => $t->nombre])->toJson() }}"
+                        data-colores="{{ $producto->colores->map(fn($c) => ['hex' => $c->hex, 'nombre' => $c->nombre, 'icono' => $c->icono ? Storage::url($c->icono) : null])->toJson() }}"
+                        data-url-tienda="{{ $producto->url_tienda ?? '' }}"
+                        data-url-detalle="{{ route('producto.detalle', $producto->slug) }}">
                         <div
                             class="relative w-full h-full rounded-[40px] bg-white p-8 md:p-12 flex flex-col justify-between transition-all duration-700 md:group-hover:shadow-2xl border border-gray-50 overflow-hidden snap-center md:snap-align-none">
                             <div class="z-10 text-left">
@@ -109,7 +117,7 @@
                                 <h4 class="text-2xl md:text-3xl font-bold text-brand-ink">{{ $producto->nombre }}</h4>
                                 @if ($producto->colores->isNotEmpty())
                                     <div class="flex gap-2 mt-3">
-                                        @foreach ($producto->colores->take(4) as $color)
+                                        @foreach ($producto->colores->take(8) as $color)
                                             @if ($color->hex)
                                                 <div class="w-4 h-4 rounded-full ring-1 ring-gray-200"
                                                     style="background-color: {{ $color->hex }}"></div>
@@ -335,43 +343,36 @@
                 class="absolute top-8 right-8 z-50 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
-            <div class="md:w-1/2 bg-[#fbfbfd] p-12 flex items-center justify-center relative group">
+            <div class="md:w-1/2 bg-gray-50 p-12 flex items-center justify-center relative group">
                 <img id="modal-img" src="" alt="Producto"
                     class="w-full h-auto object-contain mix-blend-multiply drop-shadow-2xl transition-transform duration-1000 group-hover:scale-105">
             </div>
             <div class="md:w-1/2 p-12 md:p-20 flex flex-col justify-center text-left">
                 <span id="modal-tag"
-                    class="text-[#f56300] font-bold text-xs uppercase tracking-[0.2em] mb-4">Colección Pro</span>
+                    class="text-brand-blue font-bold text-xs uppercase tracking-[0.2em] mb-4"></span>
                 <h2 id="modal-title"
-                    class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6 text-left">Nombre del
-                    Producto</h2>
-                <p id="modal-desc" class="text-gray-500 text-lg md:text-xl leading-relaxed mb-10 text-left">
-                    Descripción detallada del producto con los beneficios y especificaciones técnicas.
-                </p>
+                    class="text-4xl md:text-5xl font-bold text-brand-ink tracking-tight mb-6 text-left"></h2>
+                <p id="modal-desc" class="text-gray-500 text-md md:text-md leading-5 mb-10 text-justify"></p>
                 <div class="flex flex-col gap-6">
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm font-semibold text-gray-400">Tallas disponibles:</span>
-                        <div class="flex gap-2">
-                            <span
-                                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-[10px] font-bold uppercase">XS</span>
-                            <span
-                                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-[10px] font-bold uppercase">S</span>
-                            <span
-                                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-[10px] font-bold uppercase">M</span>
-                            <span
-                                class="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-[10px] font-bold uppercase bg-blue-600 border-blue-600 text-white">L</span>
-                        </div>
+                    <div id="modal-colores-wrap" class="flex items-center gap-4 hidden">
+                        <span class="text-sm font-semibold text-gray-400 shrink-0">Colores:</span>
+                        <div id="modal-colores" class="flex gap-2 flex-wrap"></div>
+                    </div>
+                    <div id="modal-tamanos-wrap" class="flex items-center gap-4 hidden">
+                        <span class="text-sm font-semibold text-gray-400 shrink-0">Tallas disponibles:</span>
+                        <div id="modal-tamanos" class="flex gap-2 flex-wrap"></div>
                     </div>
                     <div class="h-[1px] bg-gray-100 w-full my-4"></div>
                     <div class="flex items-center gap-4">
-                        <button
+                        <a id="modal-btn-tienda" href="#" target="_blank" rel="noopener noreferrer"
                             class="flex-1 bg-brand-blue text-white px-10 py-4 rounded-full font-semibold hover:bg-brand-blue-hover transition-all hover:scale-[1.02] active:scale-95 shadow-lg shadow-blue-500/20 text-center">
                             Comprar en Tienda
-                        </button>
-                        <button
-                            class="w-14 h-14 rounded-full border-2 border-gray-100 flex items-center justify-center text-gray-400 hover:text-red-500 hover:border-red-100 transition-all">
-                            <i data-lucide="heart" class="w-6 h-6"></i>
-                        </button>
+                        </a>
+                        <a id="modal-btn-detalle" href="#"
+                            class="w-14 h-14 rounded-full border-2 border-gray-100 flex items-center justify-center text-gray-400 hover:text-brand-blue hover:border-blue-200 transition-all"
+                            title="Ver detalle completo">
+                            <i data-lucide="arrow-up-right" class="w-6 h-6"></i>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -383,50 +384,105 @@
         <script>
             // --- AUTO-SLIDE COLLECTION ---
             const shelf = document.getElementById('product-shelf');
-            let isAutoScrolling = true;
-            let scrollSpeed = 0.5;
 
-            function autoScroll() {
-                if (isAutoScrolling && window.innerWidth > 768) {
-                    shelf.scrollLeft += scrollSpeed;
-                    if (shelf.scrollLeft >= shelf.scrollWidth - shelf.clientWidth) {
-                        shelf.scrollLeft = 0;
+            if (shelf) {
+                let isAutoScrolling = true;
+                let scrollSpeed = 0.5;
+
+                function autoScroll() {
+                    if (isAutoScrolling && window.innerWidth > 768) {
+                        shelf.scrollLeft += scrollSpeed;
+                        if (shelf.scrollLeft >= shelf.scrollWidth - shelf.clientWidth) {
+                            shelf.scrollLeft = 0;
+                        }
                     }
+                    requestAnimationFrame(autoScroll);
                 }
-                requestAnimationFrame(autoScroll);
+                autoScroll();
+
+                shelf.addEventListener('mouseenter', () => isAutoScrolling = false);
+                shelf.addEventListener('mouseleave', () => isAutoScrolling = true);
+
+                // --- CAROUSEL BUTTONS ---
+                const btnLeft = document.getElementById('scroll-left');
+                const btnRight = document.getElementById('scroll-right');
+
+                if (btnLeft) btnLeft.addEventListener('click', () => shelf.scrollBy({ left: -450, behavior: 'smooth' }));
+                if (btnRight) btnRight.addEventListener('click', () => shelf.scrollBy({ left: 450, behavior: 'smooth' }));
             }
-            autoScroll();
-
-            shelf.addEventListener('mouseenter', () => isAutoScrolling = false);
-            shelf.addEventListener('mouseleave', () => isAutoScrolling = true);
-
-            // --- CAROUSEL BUTTONS ---
-            const btnLeft = document.getElementById('scroll-left');
-            const btnRight = document.getElementById('scroll-right');
-
-            btnLeft.addEventListener('click', () => {
-                shelf.scrollBy({
-                    left: -450,
-                    behavior: 'smooth'
-                });
-            });
-
-            btnRight.addEventListener('click', () => {
-                shelf.scrollBy({
-                    left: 450,
-                    behavior: 'smooth'
-                });
-            });
 
             // --- PRODUCT DETAIL MODAL ---
-            function openDetail(id, title, desc, img, tag) {
+            function openDetail(card) {
+                const title = card.dataset.nombre;
+                const desc = card.dataset.descripcion;
+                const img = card.dataset.imagen;
+                const tag = card.dataset.tag;
+                const tamanos = JSON.parse(card.dataset.tamanos || '[]');
+                const colores = JSON.parse(card.dataset.colores || '[]');
+                const urlTienda = card.dataset.urlTienda;
+                const urlDetalle = card.dataset.urlDetalle;
                 const modal = document.getElementById('product-detail');
                 const inner = modal.querySelector('div:nth-child(2)');
 
-                document.getElementById('modal-title').innerText = title;
-                document.getElementById('modal-desc').innerText = desc;
-                document.getElementById('modal-img').src = img;
-                if (tag) document.getElementById('modal-tag').innerText = tag;
+                document.getElementById('modal-title').innerText = title || '';
+                document.getElementById('modal-desc').innerText = desc || '';
+                document.getElementById('modal-img').src = img || '';
+                document.getElementById('modal-tag').innerText = tag || '';
+
+                // --- Tallas ---
+                const tamanosCont = document.getElementById('modal-tamanos');
+                const tamanosWrap = document.getElementById('modal-tamanos-wrap');
+                tamanosCont.innerHTML = '';
+                if (tamanos.length > 0) {
+                    tamanosWrap.classList.remove('hidden');
+                    tamanos.forEach(t => {
+                        const span = document.createElement('span');
+                        span.className = 'w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-[10px] font-bold uppercase';
+                        span.textContent = t.abreviatura || t.nombre;
+                        tamanosCont.appendChild(span);
+                    });
+                } else {
+                    tamanosWrap.classList.add('hidden');
+                }
+
+                // --- Colores ---
+                const coloresCont = document.getElementById('modal-colores');
+                const coloresWrap = document.getElementById('modal-colores-wrap');
+                coloresCont.innerHTML = '';
+                if (colores.length > 0) {
+                    coloresWrap.classList.remove('hidden');
+                    colores.forEach(c => {
+                        if (c.icono) {
+                            const imgEl = document.createElement('img');
+                            imgEl.src = c.icono;
+                            imgEl.alt = c.nombre || '';
+                            imgEl.title = c.nombre || '';
+                            imgEl.className = 'w-5 h-5 rounded-full ring-1 ring-gray-200 object-cover';
+                            coloresCont.appendChild(imgEl);
+                        } else {
+                            const div = document.createElement('div');
+                            div.title = c.nombre || '';
+                            div.className = 'w-5 h-5 rounded-full ring-1 ring-gray-200';
+                            div.style.backgroundColor = c.hex || '#e5e7eb';
+                            coloresCont.appendChild(div);
+                        }
+                    });
+                } else {
+                    coloresWrap.classList.add('hidden');
+                }
+
+                // --- Botón Tienda ---
+                const btnTienda = document.getElementById('modal-btn-tienda');
+                if (urlTienda) {
+                    btnTienda.href = urlTienda;
+                    btnTienda.classList.remove('opacity-50', 'pointer-events-none');
+                } else {
+                    btnTienda.removeAttribute('href');
+                    btnTienda.classList.add('opacity-50', 'pointer-events-none');
+                }
+
+                // --- Botón Detalle ---
+                document.getElementById('modal-btn-detalle').href = urlDetalle || '#';
 
                 modal.classList.remove('invisible', 'opacity-0');
                 inner.classList.remove('scale-95');

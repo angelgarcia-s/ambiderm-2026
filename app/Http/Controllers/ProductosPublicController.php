@@ -23,7 +23,7 @@ class ProductosPublicController extends Controller
 
         $productos = $query->get();
 
-        return view('productos-ambiderm', compact('productos', 'categorias'));
+        return view('productos', compact('productos', 'categorias'));
     }
 
     /**
