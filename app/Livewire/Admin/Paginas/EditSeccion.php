@@ -20,6 +20,9 @@ class EditSeccion extends Component
     /** Imágenes temporales para items con upload (ej. soluciones_medicas) */
     public array $imagenesItems = [];
 
+    /** Video temporal para el upload del video feature */
+    public $videoFeatureFile = null;
+
     public function mount(SeccionContenido $seccionContenido): void
     {
         $this->seccionContenido = $seccionContenido;
@@ -32,6 +35,17 @@ class EditSeccion extends Component
     public function save(): void
     {
         $this->authorize('update', $this->seccionContenido);
+
+        // Procesar upload de video para home.video_feature
+        if (
+            $this->seccionContenido->pagina === 'home' &&
+            $this->seccionContenido->seccion === 'video_feature' &&
+            $this->videoFeatureFile
+        ) {
+            $this->validate(['videoFeatureFile' => 'required|mimes:mp4,webm,mov|max:102400']);
+            $path = $this->videoFeatureFile->store('secciones/videos', 'public');
+            $this->contenido['video_url'] = Storage::url($path);
+        }
 
         // Procesar uploads de imágenes para items con file upload
         if (!empty($this->imagenesItems)) {
@@ -148,7 +162,7 @@ class EditSeccion extends Component
                 'contenido.badge' => 'required|string|max:50',
                 'contenido.nombre_producto' => 'required|string|max:100',
                 'contenido.descripcion' => 'required|string|max:500',
-                'contenido.video_url' => 'required|url|max:500',
+                'contenido.video_url' => 'required|string|max:500',
                 'contenido.cta_texto' => 'required|string|max:50',
                 'contenido.cta_url' => 'required|string|max:300',
             ],
