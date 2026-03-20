@@ -110,7 +110,7 @@
                                                     {{ $tamano->abreviatura ?? $tamano->nombre }}
                                                 @endif
                                             </button>
-                                            <span class="text-xs text-gray-500 text-center leading-tight">{{ $tamano->nombre }}</span>
+                                            {{-- <span class="text-xs text-gray-500 text-center leading-tight">{{ $tamano->nombre }}</span> --}}
                                         </div>
                                     @endforeach
                                 </div>

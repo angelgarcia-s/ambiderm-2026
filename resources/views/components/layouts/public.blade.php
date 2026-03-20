@@ -104,7 +104,7 @@
     {{ $scripts ?? '' }}
 
     <!-- --- CHATBOT FLOTANTE --- -->
-    <div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
+    {{-- <div class="fixed bottom-8 right-8 z-[100] flex flex-col items-end gap-4">
         <!-- Ventana de Chat -->
         <div id="chat-window" class="w-[350px] bg-white rounded-[30px] border border-gray-100 shadow-[0_20px_50px_rgba(0,113,227,0.15)] overflow-hidden hidden opacity-0 translate-y-10 transition-all duration-500 transform origin-bottom-right">
             <!-- Header del Chat -->
@@ -153,7 +153,7 @@
             <i id="chat-icon-close" data-lucide="x" class="w-8 h-8 hidden group-hover:scale-110 transition-transform"></i>
             <span class="absolute top-0 right-0 w-5 h-5 bg-red-500 border-2 border-white rounded-full"></span>
         </button>
-    </div>
+    </div> --}}
 
     <script>
         // --- LUCIDE ICONS INIT ---
