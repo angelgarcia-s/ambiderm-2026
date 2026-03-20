@@ -46,6 +46,20 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function toggleActivo(int $id): void
+    {
+        $producto = Producto::findOrFail($id);
+        $this->authorize('update', $producto);
+        $producto->update(['activo' => ! $producto->activo]);
+    }
+
+    public function toggleDestacado(int $id): void
+    {
+        $producto = Producto::findOrFail($id);
+        $this->authorize('update', $producto);
+        $producto->update(['destacado' => ! $producto->destacado]);
+    }
+
     public function confirmDelete(int $id): void
     {
         $producto = Producto::findOrFail($id);

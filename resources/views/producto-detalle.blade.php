@@ -102,12 +102,13 @@
                                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Tamaños:</p>
                                 <div class="flex flex-wrap gap-3">
                                     @foreach ($producto->tamanos as $j => $tamano)
+                                        @php $abbr = $tamano->abreviatura ?? $tamano->nombre; @endphp
                                         <div class="flex flex-col items-center gap-1">
-                                            <button class="size-option w-12 h-12 rounded-xl border font-bold flex items-center justify-center border-gray-200 text-gray-500 hover:bg-gray-50 {{ $j === 0 ? 'active' : '' }}">
+                                            <button class="size-option {{ (!$tamano->icono && strlen($abbr) > 4) ? 'w-24' : 'w-12' }} h-12 rounded-xl border font-bold flex items-center justify-center border-gray-200 text-gray-500 hover:bg-gray-50 {{ $j === 0 ? 'active' : '' }}">
                                                 @if ($tamano->icono)
                                                     <img src="{{ Storage::url($tamano->icono) }}" alt="{{ $tamano->nombre }}" class="w-6 h-6 object-contain">
                                                 @else
-                                                    {{ $tamano->abreviatura ?? $tamano->nombre }}
+                                                    <div class="flex text-xs items-center justify-center px-2">{{ $abbr }}</div>
                                                 @endif
                                             </button>
                                             {{-- <span class="text-xs text-gray-500 text-center leading-tight">{{ $tamano->nombre }}</span> --}}
@@ -268,7 +269,7 @@
             .color-option:hover, .color-option.active { transform: scale(1.1); }
             .size-option { transition: all 0.2s; }
             .size-option:hover { border-color: #0071e3; color: #0071e3; }
-            .size-option.active { background-color: #1d1d1f; color: white; border-color: #1d1d1f; }
+            .size-option.active { background-color: #0071e3; color: white; border-color: #0071e3; }
             .accordion-content { transition: max-height 0.3s ease-out; max-height: 0; overflow: hidden; }
             .accordion-btn.active .icon-chevron { transform: rotate(180deg); }
         </style>

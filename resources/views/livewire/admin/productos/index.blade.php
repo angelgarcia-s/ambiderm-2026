@@ -100,18 +100,48 @@
                     </flux:table.cell>
                     <flux:table.cell class="text-zinc-500">{{ $producto->material ?? '—' }}</flux:table.cell>
                     <flux:table.cell>
-                        @if ($producto->activo)
-                            <flux:badge color="green" size="sm">Activo</flux:badge>
+                        @can('productos.editar')
+                            <flux:button
+                                variant="ghost"
+                                size="xs"
+                                wire:click="toggleActivo({{ $producto->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="toggleActivo({{ $producto->id }})">
+                                @if ($producto->activo)
+                                    <flux:badge color="green" size="sm" inset="top bottom">Activo</flux:badge>
+                                @else
+                                    <flux:badge color="zinc" size="sm" inset="top bottom">Inactivo</flux:badge>
+                                @endif
+                            </flux:button>
                         @else
-                            <flux:badge color="zinc" size="sm">Inactivo</flux:badge>
-                        @endif
+                            @if ($producto->activo)
+                                <flux:badge color="green" size="sm">Activo</flux:badge>
+                            @else
+                                <flux:badge color="zinc" size="sm">Inactivo</flux:badge>
+                            @endif
+                        @endcan
                     </flux:table.cell>
                     <flux:table.cell>
-                        @if ($producto->destacado)
-                            <flux:badge color="amber" size="sm">Sí</flux:badge>
+                        @can('productos.editar')
+                            <flux:button
+                                variant="ghost"
+                                size="xs"
+                                wire:click="toggleDestacado({{ $producto->id }})"
+                                wire:loading.attr="disabled"
+                                wire:target="toggleDestacado({{ $producto->id }})">
+                                @if ($producto->destacado)
+                                    <flux:badge color="amber" size="sm" inset="top bottom">Sí</flux:badge>
+                                @else
+                                    <flux:badge color="zinc" size="sm" inset="top bottom">No</flux:badge>
+                                @endif
+                            </flux:button>
                         @else
-                            <span class="text-zinc-400">—</span>
-                        @endif
+                            @if ($producto->destacado)
+                                <flux:badge color="amber" size="sm">Sí</flux:badge>
+                            @else
+                                <flux:badge color="zinc" size="sm">No</flux:badge>
+                            @endif
+                        @endcan
                     </flux:table.cell>
                     <flux:table.cell align="end">
                         <div class="flex items-center justify-end gap-2">
