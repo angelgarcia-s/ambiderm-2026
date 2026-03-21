@@ -74,7 +74,7 @@ class Index extends Component
     {
         $rules = [
             'nombre'      => ['required', 'string', 'max:50', $this->isEditing ? 'unique:tamanos,nombre,' . $this->editingId : 'unique:tamanos,nombre'],
-            'abreviatura' => ['nullable', 'string', 'max:10'],
+            'abreviatura' => ['nullable', 'string', 'max:12'],
             'icono'       => ['nullable', 'image', 'max:1024'],
             'orden'       => ['integer', 'min:0'],
         ];

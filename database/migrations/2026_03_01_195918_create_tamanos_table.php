@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tamanos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 50)->unique();
-            $table->string('abreviatura', 10)->nullable();
+            $table->string('abreviatura', 12)->nullable();
             $table->string('icono', 255)->nullable();
             $table->unsignedInteger('orden')->default(0);
             $table->timestamps();
