@@ -75,6 +75,9 @@ class Form extends Component
                     $this->imagenesPorColorActuales[$color->id] = $color->pivot->imagen;
                 }
             }
+            // Ordenar por clave para garantizar serialización JSON consistente
+            // (JS reordena claves numéricas al parse+stringify, rompiendo el checksum)
+            ksort($this->imagenesPorColorActuales);
 
             $this->caracteristicas = $producto->caracteristicas ?? [''];
             if (empty($this->caracteristicas)) {

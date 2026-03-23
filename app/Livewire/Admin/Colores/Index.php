@@ -155,15 +155,15 @@ class Index extends Component
     {
         $this->authorize('catalogos.exportar');
 
-        $colores = Color::ordenado()->get(['nombre', 'hex', 'orden']);
+        $colores = Color::ordenado()->get(['nombre', 'hex', 'icono', 'orden']);
         $tmp = tempnam(sys_get_temp_dir(), 'export_col_') . '.xlsx';
 
         $headerStyle = (new Style())->withFontBold(true);
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
-        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'hex', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'hex', 'icono', 'orden'], $headerStyle));
         foreach ($colores as $color) {
-            $writer->addRow(Row::fromValues([$color->nombre, $color->hex ?? '', $color->orden]));
+            $writer->addRow(Row::fromValues([$color->nombre, $color->hex ?? '', $color->icono ?? '', $color->orden]));
         }
         $writer->close();
 
@@ -183,9 +183,9 @@ class Index extends Component
 
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
-        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'hex', 'orden'], $headerStyle));
-        $writer->addRow(Row::fromValues(['Azul marino', '#003087', 1]));
-        $writer->addRow(Row::fromValues(['Blanco', '#ffffff', 2]));
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'hex', 'icono', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValues(['Azul marino', '#003087', '', 1]));
+        $writer->addRow(Row::fromValues(['Blanco', '#ffffff', '', 2]));
         $writer->close();
 
         return response()->streamDownload(function () use ($tmp) {
@@ -270,6 +270,7 @@ class Index extends Component
                     Color::create([
                         'nombre' => $nombre,
                         'hex'    => $hex ?: null,
+                        'icono'  => $data['icono'] ?? null ?: null,
                         'orden'  => (int) ($data['orden'] ?? 0),
                     ]);
                     $count++;

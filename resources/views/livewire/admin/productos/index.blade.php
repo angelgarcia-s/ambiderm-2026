@@ -202,7 +202,7 @@
                 <flux:icon.table-cells class="size-5 text-zinc-400 shrink-0" />
                 <div class="flex-1 min-w-0">
                     <p class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Plantilla de ejemplo</p>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Columnas: nombre, subtitulo, descripcion, material, url_tienda, categorias, tamanos, colores, activo, destacado, orden</p>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Columnas: nombre, subtitulo, descripcion, material, url_tienda, url_ficha_tecnica, categorias, tamanos, colores, caracteristicas, etiquetas, presentacion, certificaciones, activo, destacado, orden</p>
                 </div>
                 <flux:button wire:click="descargarTemplate" size="sm" variant="ghost" icon="arrow-down-tray">
                     Descargar .xlsx

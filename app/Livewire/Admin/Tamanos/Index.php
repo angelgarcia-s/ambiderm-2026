@@ -154,15 +154,15 @@ class Index extends Component
     {
         $this->authorize('catalogos.exportar');
 
-        $tamanos = Tamano::ordenado()->get(['nombre', 'abreviatura', 'orden']);
+        $tamanos = Tamano::ordenado()->get(['nombre', 'abreviatura', 'icono', 'orden']);
         $tmp = tempnam(sys_get_temp_dir(), 'export_tam_') . '.xlsx';
 
         $headerStyle = (new Style())->withFontBold(true);
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
-        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'abreviatura', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'abreviatura', 'icono', 'orden'], $headerStyle));
         foreach ($tamanos as $tamano) {
-            $writer->addRow(Row::fromValues([$tamano->nombre, $tamano->abreviatura ?? '', $tamano->orden]));
+            $writer->addRow(Row::fromValues([$tamano->nombre, $tamano->abreviatura ?? '', $tamano->icono ?? '', $tamano->orden]));
         }
         $writer->close();
 
@@ -182,10 +182,10 @@ class Index extends Component
 
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
-        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'abreviatura', 'orden'], $headerStyle));
-        $writer->addRow(Row::fromValues(['Extra Chico', 'XS', 1]));
-        $writer->addRow(Row::fromValues(['Chico', 'S', 2]));
-        $writer->addRow(Row::fromValues(['Mediano', 'M', 3]));
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'abreviatura', 'icono', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValues(['Extra Chico', 'XS', '', 1]));
+        $writer->addRow(Row::fromValues(['Chico', 'S', '', 2]));
+        $writer->addRow(Row::fromValues(['Mediano', 'M', '', 3]));
         $writer->close();
 
         return response()->streamDownload(function () use ($tmp) {
@@ -265,6 +265,7 @@ class Index extends Component
                     Tamano::create([
                         'nombre'      => $nombre,
                         'abreviatura' => $data['abreviatura'] ?? null ?: null,
+                        'icono'       => $data['icono'] ?? null ?: null,
                         'orden'       => (int) ($data['orden'] ?? 0),
                     ]);
                     $count++;

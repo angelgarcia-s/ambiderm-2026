@@ -178,17 +178,18 @@ class Index extends Component
     {
         $this->authorize('catalogos.exportar');
 
-        $categorias = Categoria::ordenado()->get(['nombre', 'slug', 'descripcion', 'activo', 'orden']);
+        $categorias = Categoria::ordenado()->get(['nombre', 'slug', 'descripcion', 'imagen', 'activo', 'requiere_verificacion', 'orden']);
         $tmp = tempnam(sys_get_temp_dir(), 'export_cat_') . '.xlsx';
 
         $headerStyle = (new Style())->withFontBold(true);
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
-        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'slug', 'descripcion', 'activo', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'slug', 'descripcion', 'imagen', 'activo', 'requiere_verificacion', 'orden'], $headerStyle));
         foreach ($categorias as $cat) {
             $writer->addRow(Row::fromValues([
                 $cat->nombre, $cat->slug, $cat->descripcion ?? '',
-                $cat->activo ? 1 : 0, $cat->orden,
+                $cat->imagen ?? '', $cat->activo ? 1 : 0,
+                $cat->requiere_verificacion ? 1 : 0, $cat->orden,
             ]));
         }
         $writer->close();
@@ -209,9 +210,9 @@ class Index extends Component
 
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
-        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'descripcion', 'activo', 'orden'], $headerStyle));
-        $writer->addRow(Row::fromValues(['Guantes de Látex', 'Guantes de látex para uso médico', 1, 1]));
-        $writer->addRow(Row::fromValues(['Guantes de Nitrilo', 'Guantes de nitrilo sin polvo', 1, 2]));
+        $writer->addRow(Row::fromValuesWithStyle(['nombre', 'descripcion', 'imagen', 'activo', 'requiere_verificacion', 'orden'], $headerStyle));
+        $writer->addRow(Row::fromValues(['Guantes de Látex', 'Guantes de látex para uso médico', '', 1, 0, 1]));
+        $writer->addRow(Row::fromValues(['Guantes de Nitrilo', 'Guantes de nitrilo sin polvo', '', 1, 0, 2]));
         $writer->close();
 
         return response()->streamDownload(function () use ($tmp) {
@@ -290,10 +291,11 @@ class Index extends Component
                 $slug = Str::slug($nombre);
                 if (! Categoria::where('slug', $slug)->exists()) {
                     Categoria::create([
-                        'nombre'      => $nombre,
-                        'descripcion' => $data['descripcion'] ?? null ?: null,
-                        'activo'      => (($data['activo'] ?? '1') === '1'),
-                        'orden'       => (int) ($data['orden'] ?? 0),
+                        'nombre'                => $nombre,
+                        'descripcion'           => $data['descripcion'] ?? null ?: null,
+                        'activo'                => (($data['activo'] ?? '1') === '1'),
+                        'requiere_verificacion' => (($data['requiere_verificacion'] ?? '0') === '1'),
+                        'orden'                 => (int) ($data['orden'] ?? 0),
                     ]);
                     $count++;
                 } else {

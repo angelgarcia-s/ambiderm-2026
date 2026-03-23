@@ -101,7 +101,7 @@ class Index extends Component
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
         $writer->addRow(Row::fromValuesWithStyle(
-            ['nombre', 'slug', 'subtitulo', 'descripcion', 'material', 'url_tienda', 'categorias', 'tamanos', 'colores', 'activo', 'destacado', 'orden'],
+            ['nombre', 'slug', 'subtitulo', 'descripcion', 'material', 'url_tienda', 'url_ficha_tecnica', 'categorias', 'tamanos', 'colores', 'caracteristicas', 'etiquetas', 'presentacion', 'certificaciones', 'activo', 'destacado', 'orden'],
             $headerStyle
         ));
         foreach ($productos as $p) {
@@ -112,9 +112,14 @@ class Index extends Component
                 $p->descripcion ?? '',
                 $p->material ?? '',
                 $p->url_tienda ?? '',
+                $p->url_ficha_tecnica ?? '',
                 $p->categorias->pluck('slug')->implode('|'),
                 $p->tamanos->pluck('nombre')->implode('|'),
                 $p->colores->pluck('nombre')->implode('|'),
+                implode('|', $p->caracteristicas ?? []),
+                implode('|', $p->etiquetas ?? []),
+                $p->presentacion ?? '',
+                $p->certificaciones ?? '',
                 $p->activo ? 1 : 0,
                 $p->destacado ? 1 : 0,
                 $p->orden,
@@ -139,11 +144,11 @@ class Index extends Component
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
         $writer->addRow(Row::fromValuesWithStyle(
-            ['nombre', 'subtitulo', 'descripcion', 'material', 'url_tienda', 'categorias', 'tamanos', 'colores', 'activo', 'destacado', 'orden'],
+            ['nombre', 'subtitulo', 'descripcion', 'material', 'url_tienda', 'url_ficha_tecnica', 'categorias', 'tamanos', 'colores', 'caracteristicas', 'etiquetas', 'presentacion', 'certificaciones', 'activo', 'destacado', 'orden'],
             $headerStyle
         ));
-        $writer->addRow(Row::fromValues(['Guante Látex', 'Para exploración médica', 'Guante de látex para uso médico.', 'Látex', '', 'guantes-medicos|dental', 'Chico|Mediano|Grande', 'Azul|Blanco', 1, 0, 1]));
-        $writer->addRow(Row::fromValues(['Guante Nitrilo', 'Sin polvo, alta resistencia', '', 'Nitrilo', 'https://tienda.ambiderm.com/nitrilo', 'guantes-medicos', 'Mediano|Grande', 'Azul', 1, 1, 2]));
+        $writer->addRow(Row::fromValues(['Guante Látex', 'Para exploración médica', 'Guante de látex para uso médico.', 'Látex', '', '', 'guantes-medicos|dental', 'Chico|Mediano|Grande', 'Azul|Blanco', 'Sin polvo|Resistente', 'LATEX|MEDICAL', '', '', 1, 0, 1]));
+        $writer->addRow(Row::fromValues(['Guante Nitrilo', 'Sin polvo, alta resistencia', '', 'Nitrilo', 'https://tienda.ambiderm.com/nitrilo', '', 'guantes-medicos', 'Mediano|Grande', 'Azul', '', 'NITRILO', '', '', 1, 1, 2]));
         $writer->close();
 
         return response()->streamDownload(function () use ($tmp) {
@@ -225,15 +230,24 @@ class Index extends Component
 
                 if (! Producto::where('slug', $slug)->exists()) {
                     $producto = Producto::create([
-                        'nombre'      => $nombre,
-                        'slug'        => $slug,
-                        'subtitulo'   => $data['subtitulo'] ?? null ?: null,
-                        'descripcion' => $data['descripcion'] ?? null ?: null,
-                        'material'    => $data['material'] ?? null ?: null,
-                        'url_tienda'  => $data['url_tienda'] ?? null ?: null,
-                        'activo'      => (($data['activo'] ?? '1') === '1'),
-                        'destacado'   => (($data['destacado'] ?? '0') === '1'),
-                        'orden'       => (int) ($data['orden'] ?? 0),
+                        'nombre'           => $nombre,
+                        'slug'             => $slug,
+                        'subtitulo'        => $data['subtitulo'] ?? null ?: null,
+                        'descripcion'      => $data['descripcion'] ?? null ?: null,
+                        'material'         => $data['material'] ?? null ?: null,
+                        'url_tienda'       => $data['url_tienda'] ?? null ?: null,
+                        'url_ficha_tecnica' => $data['url_ficha_tecnica'] ?? null ?: null,
+                        'caracteristicas'  => ! empty($data['caracteristicas'])
+                            ? array_values(array_filter(array_map('trim', explode('|', $data['caracteristicas']))))
+                            : [],
+                        'etiquetas'        => ! empty($data['etiquetas'])
+                            ? array_values(array_filter(array_map('trim', explode('|', $data['etiquetas']))))
+                            : [],
+                        'presentacion'     => $data['presentacion'] ?? null ?: null,
+                        'certificaciones'  => $data['certificaciones'] ?? null ?: null,
+                        'activo'           => (($data['activo'] ?? '1') === '1'),
+                        'destacado'        => (($data['destacado'] ?? '0') === '1'),
+                        'orden'            => (int) ($data['orden'] ?? 0),
                     ]);
 
                     if (! empty($data['categorias'])) {
