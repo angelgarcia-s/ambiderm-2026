@@ -31,6 +31,7 @@ class Index extends Component
     public array $importErrors   = [];
     public array $importWarnings = [];
     public int $importCount   = 0;
+    public int $importUpdated = 0;
     public int $importSkipped = 0;
 
     public ?int $editingId = null;
@@ -201,6 +202,7 @@ class Index extends Component
         $this->importErrors   = [];
         $this->importWarnings = [];
         $this->importCount    = 0;
+        $this->importUpdated  = 0;
         $this->importSkipped  = 0;
         $this->resetValidation('archivoCsv');
         $this->showImportModal = true;
@@ -223,6 +225,7 @@ class Index extends Component
         $ext  = strtolower($this->archivoCsv->getClientOriginalExtension());
 
         $count    = 0;
+        $updated  = 0;
         $skipped  = 0;
         $errors   = [];
         $warnings = [];
@@ -266,17 +269,21 @@ class Index extends Component
                     $errors[] = "Fila {$line}: hex '{$hex}' inválido (formato #RRGGBB).";
                     continue;
                 }
-                if (! Color::where('nombre', $nombre)->exists()) {
-                    Color::create([
-                        'nombre' => $nombre,
-                        'hex'    => $hex ?: null,
-                        'icono'  => $data['icono'] ?? null ?: null,
-                        'orden'  => (int) ($data['orden'] ?? 0),
-                    ]);
+                $attrs = [
+                    'nombre' => $nombre,
+                    'hex'    => $hex ?: null,
+                    'icono'  => $data['icono'] ?? null ?: null,
+                    'orden'  => (int) ($data['orden'] ?? 0),
+                ];
+
+                $existing = Color::where('nombre', $nombre)->first();
+
+                if (! $existing) {
+                    Color::create($attrs);
                     $count++;
                 } else {
-                    $warnings[] = "Fila {$line}: «{$nombre}» ya existe, omitido.";
-                    $skipped++;
+                    $existing->update($attrs);
+                    $updated++;
                 }
             }
             break;
@@ -286,26 +293,31 @@ class Index extends Component
         $this->importErrors   = $errors;
         $this->importWarnings = $warnings;
         $this->importCount    = $count;
+        $this->importUpdated  = $updated;
         $this->importSkipped  = $skipped;
         $this->archivoCsv     = null;
 
         if (empty($errors) && empty($warnings)) {
             $this->showImportModal = false;
             $this->resetPage();
-            session()->flash('success', $this->buildImportMessage($count, $skipped, 'color', 'colores'));
+            session()->flash('success', $this->buildImportMessage($count, $updated, $skipped, 'color', 'colores'));
         }
     }
 
-    private function buildImportMessage(int $count, int $skipped, string $singular, string $plural): string
+    private function buildImportMessage(int $count, int $updated, int $skipped, string $singular, string $plural): string
     {
         $parts = [];
         if ($count > 0) {
             $parts[] = "{$count} " . ($count === 1 ? "{$singular} nuevo importado" : "{$plural} nuevos importados");
-        } else {
-            $parts[] = 'Ningún registro nuevo importado';
+        }
+        if ($updated > 0) {
+            $parts[] = "{$updated} " . ($updated === 1 ? 'actualizado' : 'actualizados');
+        }
+        if ($count === 0 && $updated === 0) {
+            $parts[] = 'Ningún cambio realizado';
         }
         if ($skipped > 0) {
-            $parts[] = "{$skipped} " . ($skipped === 1 ? 'ya existía y fue omitido' : 'ya existían y fueron omitidos');
+            $parts[] = "{$skipped} " . ($skipped === 1 ? 'con error, omitido' : 'con errores, omitidos');
         }
         return implode(' — ', $parts) . '.';
     }
