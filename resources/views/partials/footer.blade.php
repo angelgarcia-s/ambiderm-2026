@@ -1,7 +1,5 @@
 {{-- Footer compartido: Redes sociales, Sucursales, Contacto, Copyright --}}
 @php
-    $redes      = $footer->get('redes_sociales')?->contenido ?? [];
-    $sucursales = $footer->get('sucursales')?->contenido ?? [];
     $contacto   = $footer->get('contacto')?->contenido ?? [];
     $copyright  = $footer->get('copyright')?->contenido ?? [];
 @endphp
