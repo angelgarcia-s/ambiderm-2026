@@ -128,15 +128,54 @@ Route::post('/brevo/rfc-trigger', [App\Http\Controllers\BrevoRfcTriggerControlle
 
 // ===== RUTAS DIAGNÓSTICO TEMPORAL — ELIMINAR DESPUÉS =====
 Route::get('/debug-view', function () {
-    $diffFile = storage_path('logs/lw_diff.json');
-    if (!file_exists($diffFile)) return response()->json(['message' => 'No diff yet. Load edit page, then interact.']);
+    $renderFile = storage_path('logs/lw_render_raw.txt');
+    $postFile = storage_path('logs/lw_post_raw.txt');
 
-    $key = 'livewire-checksum-failures:' . request()->ip();
+    if (!file_exists($renderFile) || !file_exists($postFile)) {
+        return response('Faltan archivos. Carga la página de edición y luego interactúa.', 200)
+            ->header('Content-Type', 'text/plain; charset=utf-8');
+    }
 
-    return response()->json([
-        'rate_limiter_attempts' => \Illuminate\Support\Facades\RateLimiter::attempts($key),
-        'diff' => json_decode(file_get_contents($diffFile), true),
-    ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    $render = file_get_contents($renderFile);
+    $post = file_get_contents($postFile);
+
+    $minLen = min(strlen($render), strlen($post));
+    $diffPos = -1;
+    for ($i = 0; $i < $minLen; $i++) {
+        if ($render[$i] !== $post[$i]) {
+            $diffPos = $i;
+            break;
+        }
+    }
+    if ($diffPos < 0 && strlen($render) !== strlen($post)) {
+        $diffPos = $minLen;
+    }
+
+    $out = "RENDER length: " . strlen($render) . "\n";
+    $out .= "POST length: " . strlen($post) . "\n";
+    $out .= "First diff at byte: " . $diffPos . "\n\n";
+
+    if ($diffPos >= 0) {
+        $start = max(0, $diffPos - 40);
+        $len = 100;
+
+        $out .= "=== RENDER bytes {$start} to " . ($start + $len) . " ===\n";
+        $out .= substr($render, $start, $len) . "\n";
+        $out .= "HEX: " . bin2hex(substr($render, $start, $len)) . "\n\n";
+
+        $out .= "=== POST bytes {$start} to " . ($start + $len) . " ===\n";
+        $out .= substr($post, $start, $len) . "\n";
+        $out .= "HEX: " . bin2hex(substr($post, $start, $len)) . "\n\n";
+
+        $out .= "=== Render byte at diff: " . ord($render[$diffPos]) . " ('" . $render[$diffPos] . "') ===\n";
+        if ($diffPos < strlen($post)) {
+            $out .= "=== Post byte at diff: " . ord($post[$diffPos]) . " ('" . $post[$diffPos] . "') ===\n";
+        }
+    } else {
+        $out .= "STRINGS ARE IDENTICAL\n";
+    }
+
+    return response($out)->header('Content-Type', 'text/plain; charset=utf-8');
 });
 
 Route::get('/debug-reset', function () {
@@ -146,7 +185,10 @@ Route::get('/debug-reset', function () {
     @unlink(storage_path('logs/lw_final.log'));
     @unlink(storage_path('logs/lw_render.json'));
     @unlink(storage_path('logs/lw_diff.json'));
-    return response()->json(['cleared_attempts' => $attempts]);
+    @unlink(storage_path('logs/lw_render_raw.txt'));
+    @unlink(storage_path('logs/lw_post_raw.txt'));
+    return response('Reset OK. Attempts cleared: ' . $attempts, 200)
+        ->header('Content-Type', 'text/plain');
 });
 // ===== FIN RUTAS DIAGNÓSTICO =====
 

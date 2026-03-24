@@ -42,18 +42,11 @@ class AppServiceProvider extends ServiceProvider
             if (($snapshot['memo']['name'] ?? '') !== 'admin.productos.form') return;
 
             $json = json_encode($snapshot);
-            $renderFile = storage_path('logs/lw_render.json');
 
             if (! request()->isMethod('POST')) {
-                file_put_contents($renderFile, $json);
+                file_put_contents(storage_path('logs/lw_render_raw.txt'), $json);
             } else {
-                $renderJson = file_exists($renderFile) ? file_get_contents($renderFile) : '';
-                file_put_contents(storage_path('logs/lw_diff.json'), json_encode([
-                    'render_len' => strlen($renderJson),
-                    'post_len'   => strlen($json),
-                    'render_json' => $renderJson,
-                    'post_json'   => $json,
-                ], JSON_UNESCAPED_UNICODE));
+                file_put_contents(storage_path('logs/lw_post_raw.txt'), $json);
             }
         });
         // ===== FIN DIAGNÓSTICO =====
