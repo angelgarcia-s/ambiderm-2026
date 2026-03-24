@@ -128,19 +128,15 @@ Route::post('/brevo/rfc-trigger', [App\Http\Controllers\BrevoRfcTriggerControlle
 
 // ===== RUTAS DIAGNÓSTICO TEMPORAL — ELIMINAR DESPUÉS =====
 Route::get('/debug-view', function () {
-    $path = storage_path('logs/lw_final.log');
-    if (!file_exists($path)) return response()->json(['message' => 'No log yet']);
+    $diffFile = storage_path('logs/lw_diff.json');
+    if (!file_exists($diffFile)) return response()->json(['message' => 'No diff yet. Load edit page, then interact.']);
 
     $key = 'livewire-checksum-failures:' . request()->ip();
-    $attempts = \Illuminate\Support\Facades\RateLimiter::attempts($key);
-
-    $lines = array_filter(explode("\n", file_get_contents($path)));
-    $entries = array_map(fn($l) => json_decode($l, true), $lines);
 
     return response()->json([
-        'rate_limiter_attempts' => $attempts,
-        'entries' => $entries,
-    ], 200, [], JSON_PRETTY_PRINT);
+        'rate_limiter_attempts' => \Illuminate\Support\Facades\RateLimiter::attempts($key),
+        'diff' => json_decode(file_get_contents($diffFile), true),
+    ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
 });
 
 Route::get('/debug-reset', function () {
@@ -148,6 +144,8 @@ Route::get('/debug-reset', function () {
     $attempts = \Illuminate\Support\Facades\RateLimiter::attempts($key);
     \Illuminate\Support\Facades\RateLimiter::clear($key);
     @unlink(storage_path('logs/lw_final.log'));
+    @unlink(storage_path('logs/lw_render.json'));
+    @unlink(storage_path('logs/lw_diff.json'));
     return response()->json(['cleared_attempts' => $attempts]);
 });
 // ===== FIN RUTAS DIAGNÓSTICO =====
