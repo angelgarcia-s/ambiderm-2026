@@ -101,7 +101,7 @@ class Index extends Component
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
         $writer->addRow(Row::fromValuesWithStyle(
-            ['nombre', 'slug', 'subtitulo', 'descripcion', 'material', 'url_tienda', 'url_ficha_tecnica', 'categorias', 'tamanos', 'colores', 'caracteristicas', 'etiquetas', 'presentacion', 'certificaciones', 'activo', 'destacado', 'orden'],
+            ['nombre', 'slug', 'subtitulo', 'descripcion', 'material', 'imagen', 'url_tienda', 'url_ficha_tecnica', 'categorias', 'tamanos', 'colores', 'caracteristicas', 'etiquetas', 'presentacion', 'certificaciones', 'activo', 'destacado', 'orden'],
             $headerStyle
         ));
         foreach ($productos as $p) {
@@ -111,6 +111,7 @@ class Index extends Component
                 $p->subtitulo ?? '',
                 $p->descripcion ?? '',
                 $p->material ?? '',
+                $p->imagen ?? '',
                 $p->url_tienda ?? '',
                 $p->url_ficha_tecnica ?? '',
                 $p->categorias->pluck('slug')->implode('|'),
@@ -144,11 +145,11 @@ class Index extends Component
         $writer = new XlsxWriter();
         $writer->openToFile($tmp);
         $writer->addRow(Row::fromValuesWithStyle(
-            ['nombre', 'subtitulo', 'descripcion', 'material', 'url_tienda', 'url_ficha_tecnica', 'categorias', 'tamanos', 'colores', 'caracteristicas', 'etiquetas', 'presentacion', 'certificaciones', 'activo', 'destacado', 'orden'],
+            ['nombre', 'subtitulo', 'descripcion', 'material', 'imagen', 'url_tienda', 'url_ficha_tecnica', 'categorias', 'tamanos', 'colores', 'caracteristicas', 'etiquetas', 'presentacion', 'certificaciones', 'activo', 'destacado', 'orden'],
             $headerStyle
         ));
-        $writer->addRow(Row::fromValues(['Guante Látex', 'Para exploración médica', 'Guante de látex para uso médico.', 'Látex', '', '', 'guantes-medicos|dental', 'Chico|Mediano|Grande', 'Azul|Blanco', 'Sin polvo|Resistente', 'LATEX|MEDICAL', '', '', 1, 0, 1]));
-        $writer->addRow(Row::fromValues(['Guante Nitrilo', 'Sin polvo, alta resistencia', '', 'Nitrilo', 'https://tienda.ambiderm.com/nitrilo', '', 'guantes-medicos', 'Mediano|Grande', 'Azul', '', 'NITRILO', '', '', 1, 1, 2]));
+        $writer->addRow(Row::fromValues(['Guante Látex', 'Para exploración médica', 'Guante de látex para uso médico.', 'Látex', 'productos/guante-latex.jpg', '', '', 'guantes-medicos|dental', 'Chico|Mediano|Grande', 'Azul|Blanco', 'Sin polvo|Resistente', 'LATEX|MEDICAL', '', '', 1, 0, 1]));
+        $writer->addRow(Row::fromValues(['Guante Nitrilo', 'Sin polvo, alta resistencia', '', 'Nitrilo', '', 'https://tienda.ambiderm.com/nitrilo', '', 'guantes-medicos', 'Mediano|Grande', 'Azul', '', 'NITRILO', '', '', 1, 1, 2]));
         $writer->close();
 
         return response()->streamDownload(function () use ($tmp) {
@@ -235,6 +236,7 @@ class Index extends Component
                         'subtitulo'        => $data['subtitulo'] ?? null ?: null,
                         'descripcion'      => $data['descripcion'] ?? null ?: null,
                         'material'         => $data['material'] ?? null ?: null,
+                        'imagen'           => $data['imagen'] ?? null ?: null,
                         'url_tienda'       => $data['url_tienda'] ?? null ?: null,
                         'url_ficha_tecnica' => $data['url_ficha_tecnica'] ?? null ?: null,
                         'caracteristicas'  => ! empty($data['caracteristicas'])
