@@ -195,7 +195,7 @@
         <form wire:submit="procesarImportacion" class="space-y-6">
             <div>
                 <flux:heading size="lg">Importar productos desde CSV</flux:heading>
-                <flux:subheading>Solo se crearán registros nuevos. Los que ya existan (mismo nombre) <strong>no serán modificados</strong>. El slug se genera automáticamente. La columna <code>categorias</code> acepta slugs separados por <code>|</code>.</flux:subheading>
+                <flux:subheading>Se crearán registros nuevos y se <strong>actualizarán los existentes</strong> (mismo nombre). El slug se genera automáticamente. La columna <code>categorias</code> acepta slugs separados por <code>|</code>.</flux:subheading>
             </div>
 
             <div class="flex items-center gap-3 p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800">

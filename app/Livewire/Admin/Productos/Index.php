@@ -232,51 +232,54 @@ class Index extends Component
                 // Slug siempre generado internamente — el usuario no lo controla
                 $slug = Str::slug($nombre);
 
-                if (! Producto::where('slug', $slug)->exists()) {
-                    $producto = Producto::create([
-                        'nombre'           => $nombre,
-                        'slug'             => $slug,
-                        'subtitulo'        => $data['subtitulo'] ?? null ?: null,
-                        'descripcion'      => $data['descripcion'] ?? null ?: null,
-                        'material'         => $data['material'] ?? null ?: null,
-                        'imagen'           => $data['imagen'] ?? null ?: null,
-                        'url_tienda'       => $data['url_tienda'] ?? null ?: null,
-                        'url_ficha_tecnica' => $data['url_ficha_tecnica'] ?? null ?: null,
-                        'caracteristicas'  => ! empty($data['caracteristicas'])
-                            ? array_values(array_filter(array_map('trim', explode('|', $data['caracteristicas']))))
-                            : [],
-                        'etiquetas'        => ! empty($data['etiquetas'])
-                            ? array_values(array_filter(array_map('trim', explode('|', $data['etiquetas']))))
-                            : [],
-                        'presentacion'     => $data['presentacion'] ?? null ?: null,
-                        'certificaciones'  => $data['certificaciones'] ?? null ?: null,
-                        'activo'           => (($data['activo'] ?? '1') === '1'),
-                        'destacado'        => (($data['destacado'] ?? '0') === '1'),
-                        'orden'            => (int) ($data['orden'] ?? 0),
-                    ]);
+                $attrs = [
+                    'nombre'           => $nombre,
+                    'subtitulo'        => $data['subtitulo'] ?? null ?: null,
+                    'descripcion'      => $data['descripcion'] ?? null ?: null,
+                    'material'         => $data['material'] ?? null ?: null,
+                    'imagen'           => $data['imagen'] ?? null ?: null,
+                    'url_tienda'       => $data['url_tienda'] ?? null ?: null,
+                    'url_ficha_tecnica' => $data['url_ficha_tecnica'] ?? null ?: null,
+                    'caracteristicas'  => ! empty($data['caracteristicas'])
+                        ? array_values(array_filter(array_map('trim', explode('|', $data['caracteristicas']))))
+                        : [],
+                    'etiquetas'        => ! empty($data['etiquetas'])
+                        ? array_values(array_filter(array_map('trim', explode('|', $data['etiquetas']))))
+                        : [],
+                    'presentacion'     => $data['presentacion'] ?? null ?: null,
+                    'certificaciones'  => $data['certificaciones'] ?? null ?: null,
+                    'activo'           => (($data['activo'] ?? '1') === '1'),
+                    'destacado'        => (($data['destacado'] ?? '0') === '1'),
+                    'orden'            => (int) ($data['orden'] ?? 0),
+                ];
 
-                    if (! empty($data['categorias'])) {
-                        $slugs = array_filter(array_map('trim', explode('|', $data['categorias'])));
-                        $ids   = Categoria::whereIn('slug', $slugs)->pluck('id');
-                        $producto->categorias()->attach($ids);
-                    }
+                $existing = Producto::where('slug', $slug)->first();
 
-                    if (! empty($data['tamanos'])) {
-                        $nombres = array_filter(array_map('trim', explode('|', $data['tamanos'])));
-                        $ids     = Tamano::whereIn('nombre', $nombres)->pluck('id');
-                        $producto->tamanos()->attach($ids);
-                    }
-
-                    if (! empty($data['colores'])) {
-                        $nombres = array_filter(array_map('trim', explode('|', $data['colores'])));
-                        $ids     = Color::whereIn('nombre', $nombres)->pluck('id');
-                        $producto->colores()->attach($ids);
-                    }
-
+                if (! $existing) {
+                    $producto = Producto::create(array_merge($attrs, ['slug' => $slug]));
                     $count++;
                 } else {
-                    $warnings[] = "Fila {$line}: «{$nombre}» ya existe, omitido.";
-                    $skipped++;
+                    $existing->update($attrs);
+                    $producto = $existing;
+                    $updated++;
+                }
+
+                if (! empty($data['categorias'])) {
+                    $slugs = array_filter(array_map('trim', explode('|', $data['categorias'])));
+                    $ids   = Categoria::whereIn('slug', $slugs)->pluck('id');
+                    $producto->categorias()->sync($ids);
+                }
+
+                if (! empty($data['tamanos'])) {
+                    $nombres = array_filter(array_map('trim', explode('|', $data['tamanos'])));
+                    $ids     = Tamano::whereIn('nombre', $nombres)->pluck('id');
+                    $producto->tamanos()->sync($ids);
+                }
+
+                if (! empty($data['colores'])) {
+                    $nombres = array_filter(array_map('trim', explode('|', $data['colores'])));
+                    $ids     = Color::whereIn('nombre', $nombres)->pluck('id');
+                    $producto->colores()->sync($ids);
                 }
             }
             break;

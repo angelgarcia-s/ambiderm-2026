@@ -190,7 +190,7 @@
         <form wire:submit="procesarImportacion" class="space-y-6">
             <div>
                 <flux:heading size="lg">Importar colores</flux:heading>
-                <flux:subheading>Solo se crearán registros nuevos. Los que ya existan (mismo nombre) <strong>no serán modificados</strong>. Columnas requeridas: <code>nombre, hex, orden</code>.</flux:subheading>
+                <flux:subheading>Se crearán registros nuevos y se <strong>actualizarán los existentes</strong> (mismo nombre). Columnas requeridas: <code>nombre, hex, orden</code>.</flux:subheading>
             </div>
 
             <div class="flex items-center gap-3 p-4 rounded-lg bg-zinc-50 dark:bg-zinc-800">
