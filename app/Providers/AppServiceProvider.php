@@ -36,6 +36,27 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configurePolicies();
         $this->configureViewComposers();
+
+        // ===== DIAGNÓSTICO TEMPORAL — ELIMINAR DESPUÉS =====
+        \Livewire\on('checksum.generate', function ($checksum, $snapshot) {
+            if (($snapshot['memo']['name'] ?? '') !== 'admin.productos.form') return;
+
+            $entry = [
+                'time'      => date('H:i:s.u'),
+                'is_post'   => request()->isMethod('POST'),
+                'key_md5'   => md5(app('encrypter')->getKey()),
+                'checksum'  => $checksum,
+                'json_md5'  => md5(json_encode($snapshot)),
+                'json_len'  => strlen(json_encode($snapshot)),
+            ];
+
+            file_put_contents(
+                storage_path('logs/lw_final.log'),
+                json_encode($entry) . "\n",
+                FILE_APPEND
+            );
+        });
+        // ===== FIN DIAGNÓSTICO =====
     }
 
     /**

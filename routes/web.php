@@ -126,4 +126,30 @@ Route::get('/landings/ortopedico', function () {
 
 Route::post('/brevo/rfc-trigger', [App\Http\Controllers\BrevoRfcTriggerController::class, 'handle'])->name('brevo.rfc-trigger');
 
+// ===== RUTAS DIAGNÓSTICO TEMPORAL — ELIMINAR DESPUÉS =====
+Route::get('/debug-view', function () {
+    $path = storage_path('logs/lw_final.log');
+    if (!file_exists($path)) return response()->json(['message' => 'No log yet']);
+
+    $key = 'livewire-checksum-failures:' . request()->ip();
+    $attempts = \Illuminate\Support\Facades\RateLimiter::attempts($key);
+
+    $lines = array_filter(explode("\n", file_get_contents($path)));
+    $entries = array_map(fn($l) => json_decode($l, true), $lines);
+
+    return response()->json([
+        'rate_limiter_attempts' => $attempts,
+        'entries' => $entries,
+    ], 200, [], JSON_PRETTY_PRINT);
+});
+
+Route::get('/debug-reset', function () {
+    $key = 'livewire-checksum-failures:' . request()->ip();
+    $attempts = \Illuminate\Support\Facades\RateLimiter::attempts($key);
+    \Illuminate\Support\Facades\RateLimiter::clear($key);
+    @unlink(storage_path('logs/lw_final.log'));
+    return response()->json(['cleared_attempts' => $attempts]);
+});
+// ===== FIN RUTAS DIAGNÓSTICO =====
+
 require __DIR__.'/settings.php';
