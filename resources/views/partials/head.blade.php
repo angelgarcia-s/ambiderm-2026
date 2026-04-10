@@ -13,3 +13,6 @@
 
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @fluxAppearance
+
+<!-- Google Analytics -->
+@include('partials.google-analytics')

@@ -169,6 +169,9 @@
             }
         }
     </style>
+
+    <!-- Google Analytics -->
+    @include('partials.google-analytics')
 </head>
 
 <body class="bg-white">

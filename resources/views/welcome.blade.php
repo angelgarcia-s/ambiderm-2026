@@ -1826,6 +1826,9 @@
             initial-value: 100%
         }
     </style>
+
+    <!-- Google Analytics -->
+    @include('partials.google-analytics')
 </head>
 
 <body

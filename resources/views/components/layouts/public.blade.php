@@ -15,6 +15,9 @@
     <script src="https://unpkg.com/@studio-freight/lenis@1.0.33/dist/lenis.min.js"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Google Analytics -->
+    @include('partials.google-analytics')
 </head>
 
 <body class="font-sans text-brand-ink bg-white selection:bg-blue-200 selection:text-blue-900 overflow-x-hidden">
