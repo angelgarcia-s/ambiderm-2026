@@ -18,7 +18,7 @@
         <flux:input wire:model="contenido.distribuidor_subtitulo" label="Subtítulo" placeholder="Únete a la red Ambiderm" />
     </div>
     <flux:input wire:model="contenido.distribuidor_url" label="URL formulario distribuidor" type="url" placeholder="https://share.hsforms.com/..." />
-    <flux:input wire:model="contenido.distribuidor_icono" label="URL icono distribuidor" type="url" placeholder="https://...distribuidor-icon.svg" />
+    <flux:input wire:model="contenido.distribuidor_icono" label="Ruta icono distribuidor" type="text" placeholder="/images/distribuidor-icon.svg" />
 </div>
 
 

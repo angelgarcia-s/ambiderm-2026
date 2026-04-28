@@ -9,7 +9,7 @@
 <flux:input wire:model="contenido.anio_etiqueta" label="Etiqueta del año" placeholder="Fundación en México" />
 
 <div>
-    <flux:input wire:model="contenido.imagen" label="URL imagen historia" type="url" placeholder="https://..." />
+    <flux:input wire:model="contenido.imagen" label="Ruta imagen historia" type="text" placeholder="/images/guantes-agua.jpeg" />
     @if (!empty($contenido['imagen']))
         <img src="{{ $contenido['imagen'] }}" alt="Preview" class="max-h-32 rounded-lg border border-zinc-200 mt-2">
     @endif

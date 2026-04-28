@@ -9,8 +9,8 @@
 <flux:textarea wire:model="contenido.subtitulo" label="Subtítulo" rows="2"
     placeholder="Siente la diferencia. Seguridad clínica con tacto natural." />
 
-<flux:input wire:model="contenido.imagen" label="URL de imagen hero" type="url"
-    placeholder="https://..." />
+<flux:input wire:model="contenido.imagen" label="Ruta de imagen hero" type="text"
+    placeholder="/images/hero-colores.png" />
 
 @if (!empty($contenido['imagen']))
     <div class="mt-2">

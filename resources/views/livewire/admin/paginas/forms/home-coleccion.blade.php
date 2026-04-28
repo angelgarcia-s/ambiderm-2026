@@ -8,4 +8,4 @@
 </div>
 
 <flux:input wire:model="contenido.subtitulo" label="Subtítulo" placeholder="Encuentra el ajuste perfecto para ti." />
-<flux:input wire:model="contenido.ver_todos_url" label="URL 'Ver todos'" type="url" placeholder="https://ambiderm.com.mx/categoria/guantes" />
+<flux:input wire:model="contenido.ver_todos_url" label="Ruta 'Ver todos'" type="text" placeholder="/productos" />

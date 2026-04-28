@@ -32,7 +32,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <flux:input wire:model="contenido.items.{{ $i }}.telefono" label="Teléfono" placeholder="+52 33 3656 6557" />
                 <flux:input wire:model="contenido.items.{{ $i }}.mapa_url" label="URL Google Maps" type="url" placeholder="https://goo.gl/maps/..." />
-                <flux:input wire:model="contenido.items.{{ $i }}.mapa_imagen" label="URL imagen mapa" type="url" placeholder="https://...mapas/gdl.png" />
+                <flux:input wire:model="contenido.items.{{ $i }}.mapa_imagen" label="Ruta imagen mapa" type="text" placeholder="/images/gdl.png" />
             </div>
             @if (!empty($contenido['items'][$i]['mapa_imagen']))
                 <img src="{{ $contenido['items'][$i]['mapa_imagen'] }}" alt="Mapa preview" class="max-h-24 rounded-lg border border-zinc-200">

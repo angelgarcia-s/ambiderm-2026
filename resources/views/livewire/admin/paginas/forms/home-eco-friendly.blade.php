@@ -14,13 +14,13 @@
 
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
     <div>
-        <flux:input wire:model="contenido.imagen" label="URL imagen producto" type="url" placeholder="https://..." />
+        <flux:input wire:model="contenido.imagen" label="Ruta imagen producto" type="text" placeholder="/images/eco-foto.png" />
         @if (!empty($contenido['imagen']))
             <img src="{{ $contenido['imagen'] }}" alt="Preview" class="max-h-32 rounded-lg border border-zinc-200 mt-2">
         @endif
     </div>
     <div>
-        <flux:input wire:model="contenido.icono" label="URL icono eco" type="url" placeholder="https://..." />
+        <flux:input wire:model="contenido.icono" label="Ruta icono eco" type="text" placeholder="/images/eco-friendly-icon.png" />
         @if (!empty($contenido['icono']))
             <img src="{{ $contenido['icono'] }}" alt="Preview" class="max-h-16 rounded-lg border border-zinc-200 mt-2">
         @endif
